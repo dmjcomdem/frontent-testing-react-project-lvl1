@@ -1,0 +1,54 @@
+{
+  "name": "@hexlet/code",
+  "version": "1.0.0",
+  "description": "page loader resources",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmjcomdem/frontent-testing-react-project-lvl1.git"
+  },
+  "author": "dmjcomdem",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dmjcomdem/frontent-testing-react-project-lvl1/issues"
+  },
+  "homepage": "https://github.com/dmjcomdem/frontent-testing-react-project-lvl1#readme",
+  "dependencies": {
+    "axios": "^0.21.1",
+    "cheerio": "^1.0.0-rc.9",
+    "commander": "^4.1.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.13.16",
+    "@babel/core": "^7.14.0",
+    "@babel/eslint-parser": "^7.13.14",
+    "@babel/eslint-plugin": "^7.13.16",
+    "@babel/node": "^7.13.13",
+    "@babel/preset-env": "^7.14.1",
+    "babel-jest": "^26.6.3",
+    "eslint": "^7.26.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.3.6",
+    "eslint-plugin-prettier": "^3.4.0",
+    "jest": "^26.6.3",
+    "lint-staged": "^11.0.0",
+    "nock": "^13.0.11",
+    "prettier": "^2.2.1",
+    "simple-git-hooks": "^2.4.1"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged",
+    "pre-push": "npm run jest"
+  },
+  "lint-staged": {
+    "src/**/*.js": [
+      "prettier --config .prettierrc.json --write",
+      "eslint"
+    ]
+  }
+}
