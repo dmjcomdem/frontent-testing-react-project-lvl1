@@ -1,21 +1,23 @@
 {
   "name": "@hexlet/code",
+  "author": "dmjcomdem",
   "version": "1.0.0",
-  "description": "page loader resources",
-  "main": "index.js",
-  "scripts": {
-    "test": "jest"
+  "description": "Command-line tool for downloading page loader resources",
+  "license": "ISC",
+  "engines": {
+    "node": "14.x"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dmjcomdem/frontent-testing-react-project-lvl1.git"
   },
-  "author": "dmjcomdem",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/dmjcomdem/frontent-testing-react-project-lvl1/issues"
+  "main": "index.js",
+  "scripts": {
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
+    "lint": "eslint .",
+    "test": "npx jest",
+    "test:watch": "jest --watch"
   },
-  "homepage": "https://github.com/dmjcomdem/frontent-testing-react-project-lvl1#readme",
   "dependencies": {
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.9",
