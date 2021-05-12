@@ -9,8 +9,10 @@ import { getResource } from './getResource';
 const logger = debug('page-loader');
 
 export const loader = async (url, folder, log = logger) => {
-  log('url is empty');
-  if (!url) return '';
+  if (!url) {
+    log('url is empty');
+    return '';
+  }
 
   try {
     const fileName = getName(url);
