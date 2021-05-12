@@ -7,11 +7,17 @@
   "engines": {
     "node": "14.x"
   },
+  "bin": {
+    "page-loader": "dist/bin/page-loader.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dmjcomdem/frontent-testing-react-project-lvl1.git"
   },
-  "main": "index.js",
+  "files": [
+    "dist"
+  ],
+  "main": "src/index.js",
   "scripts": {
     "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "lint": "eslint .",
@@ -21,7 +27,8 @@
   "dependencies": {
     "axios": "^0.21.1",
     "cheerio": "^1.0.0-rc.9",
-    "commander": "^4.1.1"
+    "commander": "^4.1.1",
+    "debug": "^4.3.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.13.16",
@@ -52,5 +59,8 @@
       "prettier --config .prettierrc.json --write",
       "eslint"
     ]
+  },
+  "quokka": {
+    "babel": true
   }
 }
