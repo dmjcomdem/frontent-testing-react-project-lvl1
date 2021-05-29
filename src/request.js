@@ -1,3 +1,6 @@
 import axios from 'axios';
 
-export const request = (url, options) => axios(url, options).then((response) => response?.data);
+export const request = async (url, options) => {
+  const { data } = await axios(url, options);
+  return data;
+};
