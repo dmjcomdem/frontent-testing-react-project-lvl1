@@ -8,9 +8,9 @@ import { getResource } from './getResource';
 
 const logger = debug('page-loader');
 
-export const loader = async (url, folder, log = logger) => {
+export const loader = async (url, folder) => {
   if (!url) {
-    log('url is empty');
+    logger('url is empty');
     return '';
   }
 
@@ -21,29 +21,27 @@ export const loader = async (url, folder, log = logger) => {
     const filePath = path.resolve(__dirname, folder, fileName);
     const folderPath = path.resolve(__dirname, folder, folderName);
 
-    log(`fetch ${url}`);
+    logger(`fetch ${url}`);
     const htmlData = await request(url, { responseType: 'text' });
 
-    log(`get resources page`);
-    const { data, links } = getResource(htmlData, url);
+    logger(`get resources page`);
+    const { html, links } = getResource(htmlData, url);
 
-    log(`create directory ${folderPath}`);
+    logger(`create directory ${folderPath}`);
     await fs.mkdir(folderPath, { recursive: true });
 
-    log(`write file ${filePath}`);
-    await fs.writeFile(filePath, data);
+    logger(`write file ${filePath}`);
+    await fs.writeFile(filePath, html);
 
-    const promises = links.map(async ({ href, name }) => {
+    for await (let { href, name } of links) {
       const response = await request(href, { responseType: 'arraybuffer' });
       await fs.writeFile(`${folderPath}/${name}`, response);
-      log(`✔ fetch and write resource ${href}`);
-    });
-
-    await Promise.all(promises);
+      logger(`✔ fetch and write resource ${href}`);
+    }
 
     return filePath;
   } catch (error) {
-    log(`error: ${error}`);
-    console.error(error);
+    logger(`error: ${error}`);
+    throw error;
   }
 };

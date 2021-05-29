@@ -31,5 +31,5 @@ export const getResource = (data, url) => {
     });
   });
 
-  return { data: $.html(), links };
+  return { html: $.html(), links };
 };
