@@ -10,6 +10,7 @@ import axios from 'axios';
 import loader from '../src';
 
 /* settings */
+nock.disableNetConnect();
 axios.defaults.adapter = require('axios/lib/adapters/http');
 
 /* variables */
@@ -40,19 +41,11 @@ const resources = [
 ];
 
 /* utils */
+const getFixture = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
-const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filename);
 
 describe('page-loader', () => {
-  afterAll(() => {
-    nock.restore();
-  });
-
-  afterEach(() => {
-    nock.cleanAll();
-  });
-
-  beforeEach(async () => {
+  beforeAll(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
     const indexFile = getFixture('index.html');
     nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
@@ -66,11 +59,6 @@ describe('page-loader', () => {
         'Content-Type': resource.contentType,
       });
     }
-  });
-
-  test('should return error for wrong folder', async () => {
-    const scope = nock(origin).persist().get('/').reply(500);
-    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
   });
 
   test('should returns absolute path to the saved file', async () => {
@@ -97,13 +85,17 @@ describe('page-loader', () => {
     const scope = nock(origin).persist().get('/not-found').reply(400);
     const result = () => loader(`${origin}/not-found`, tempDir);
     await expect(result).rejects.toThrow(Error);
-    expect(scope.isDone()).toBe(true);
+    scope.isDone();
   });
 
   test('should return reject with 500', async () => {
     const scope = nock(origin).persist().get('/').reply(500);
     const result = () => loader(`${origin}`, tempDir);
     await expect(result).rejects.toThrow(Error);
-    expect(scope.isDone()).toBe(true);
+    scope.isDone();
+  });
+
+  test('should return error for wrong folder', async () => {
+    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
   });
 });
