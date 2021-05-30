@@ -9,7 +9,9 @@ import getResource from './getResource';
 const logger = debug('page-loader');
 
 const loader = async (url = '', folder = process.cwd()) => {
-  if (!url) {
+  logger(`URL argument - ${url}`);
+
+  if (!url && typeof url !== 'string') {
     logger('url is empty');
     return '';
   }
