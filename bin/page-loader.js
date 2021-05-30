@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 import program from 'commander';
-import { version, description } from '../../package.json';
-import loader from '..';
+import { version, description } from '../package.json';
+import loader from '../src';
 
 const run = () => {
   program

@@ -5,10 +5,10 @@
   "description": "Command-line tool for downloading page loader resources",
   "license": "ISC",
   "engines": {
-    "node": "14.x"
+    "node": ">=14"
   },
   "bin": {
-    "page-loader": "src/bin/page-loader.js"
+    "page-loader": "bin/page-loader.js"
   },
   "repository": {
     "type": "git",
@@ -22,8 +22,6 @@
     "testEnvironment": "node"
   },
   "scripts": {
-    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
-    "lint": "eslint .",
     "test": "npx jest",
     "test:watch": "jest --watch"
   },
