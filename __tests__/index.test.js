@@ -44,20 +44,22 @@ const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const getFixture = (fileName) => path.join(__dirname, '../__fixtures__', fileName);
 
 describe('page-loader', () => {
+  afterAll(() => {
+    nock.restore();
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   beforeAll(async () => {
-    nock.disableNetConnect();
     // create temp-directory
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
 
     // read file fixture to resource data
     for (let resource of resources) {
       resource.data = await readFile(getFixture(resource.name));
     }
-  });
-
-  afterAll(() => {
-    nock.restore();
-    nock.enableNetConnect();
   });
 
   beforeEach(async () => {
