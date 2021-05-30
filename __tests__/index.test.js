@@ -47,7 +47,7 @@ describe('page-loader', () => {
   beforeAll(async () => {
     nock.disableNetConnect();
     // create temp-directory
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'folder-temp'));
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
 
     // read file fixture to resource data
     for (let resource of resources) {
@@ -56,11 +56,13 @@ describe('page-loader', () => {
   });
 
   afterAll(() => {
-    nock.cleanAll();
+    nock.restore();
     nock.enableNetConnect();
   });
 
   beforeEach(async () => {
+    nock.cleanAll();
+
     const indexFile = await readFile(getFixture('index.html'));
     nock(origin).persist().get(pathname).reply(200, indexFile);
 
