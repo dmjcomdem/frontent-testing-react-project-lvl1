@@ -1,5 +1,8 @@
 import cheerio from 'cheerio';
 import getName from './getName';
+import debug from 'debug';
+
+const logger = debug('page-loader');
 
 const tagsMap = {
   img: 'src',
@@ -16,6 +19,8 @@ export const getResource = (data, url) => {
   Object.entries(tagsMap).forEach(([tag, attr]) => {
     $(tag).each((_, el) => {
       const value = $(el).attr(attr);
+      if (!value) return;
+
       const link = new URL(value, origin);
 
       if (link.host !== host) {

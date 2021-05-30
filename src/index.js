@@ -34,6 +34,7 @@ const loader = async (url, folder = process.cwd()) => {
     await fs.writeFile(filePath, html);
 
     for await (let { href, name } of links) {
+      logger(`✔ start fetch resource [${name}] - ${href}`);
       const response = await request(href, { responseType: 'arraybuffer' });
       await fs.writeFile(`${folderPath}/${name}`, response);
       logger(`✔ fetch and write resource ${href}`);

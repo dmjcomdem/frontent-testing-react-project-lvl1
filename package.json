@@ -22,6 +22,7 @@
     "testEnvironment": "node"
   },
   "scripts": {
+    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
     "test": "npx jest --colors --runInBand --bail",
     "test:watch": "jest --watch"
   },
