@@ -8,8 +8,8 @@ const run = () => {
   program
     .description(description)
     .version(version)
-    .option('-o, --output [folder]', 'output folder', '.')
     .arguments('<url>')
+    .option('-o, --output [folder]', 'output folder', process.cwd())
     .action(async (url, argv) => {
       try {
         const file = await loader(url, argv.output);

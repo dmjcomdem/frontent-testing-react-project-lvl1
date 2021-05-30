@@ -8,7 +8,7 @@ import getResource from './getResource';
 
 const logger = debug('page-loader');
 
-const loader = async (url, folder = './') => {
+const loader = async (url, folder = process.cwd()) => {
   if (!url) {
     logger('url is empty');
     return '';
@@ -18,8 +18,8 @@ const loader = async (url, folder = './') => {
     const fileName = getName(url);
     const folderName = getName(url, 'folder');
 
-    const filePath = path.resolve(__dirname, String(folder), fileName);
-    const folderPath = path.resolve(__dirname, String(folder), folderName);
+    const filePath = path.resolve(__dirname, folder, fileName);
+    const folderPath = path.resolve(__dirname, folder, folderName);
 
     logger(`fetch ${url}`);
     const htmlData = await request(url, { responseType: 'text' });
