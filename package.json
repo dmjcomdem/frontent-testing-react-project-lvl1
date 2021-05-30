@@ -22,7 +22,7 @@
     "testEnvironment": "node"
   },
   "scripts": {
-    "jest": "npx jest",
+    "test": "npx jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
@@ -53,7 +53,7 @@
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged",
-    "pre-push": "npm run test"
+    "pre-push": "npm test"
   },
   "lint-staged": {
     "src/**/*.js": [
