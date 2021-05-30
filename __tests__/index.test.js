@@ -44,14 +44,6 @@ const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filename);
 
 describe('page-loader', () => {
-  afterAll(() => {
-    nock.restore();
-  });
-
-  afterEach(() => {
-    nock.cleanAll();
-  });
-
   beforeEach(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
     const indexFile = getFixture('index.html');
@@ -92,14 +84,12 @@ describe('page-loader', () => {
     const scope = nock(origin).persist().get('/not-found').reply(400);
     const result = () => loader(`${origin}/not-found`, tempDir);
     await expect(result).rejects.toThrow(Error);
-    expect(scope.isDone()).toBe(true);
   });
 
   test('should return reject with 500', async () => {
     const scope = nock(origin).persist().get('/').reply(500);
     const result = () => loader(origin, tempDir);
     await expect(result).rejects.toThrow(Error);
-    expect(scope.isDone()).toBe(true);
   });
 
   test('should return error for wrong folder', async () => {
@@ -107,6 +97,5 @@ describe('page-loader', () => {
     const result = () => loader(origin, tempDir);
     await expect(result).rejects.toThrow(Error);
     await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
-    expect(scope.isDone()).toBe(true);
   });
 });
