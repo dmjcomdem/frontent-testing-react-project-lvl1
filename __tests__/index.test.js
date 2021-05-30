@@ -1,6 +1,6 @@
 import os from 'os';
 import path from 'path';
-import fs from 'fs/promises';
+import { promises as fs } from 'fs';
 
 /* npm-package */
 import nock from 'nock';
@@ -25,17 +25,17 @@ const resources = [
   {
     path: '/assets/application.css',
     name: 'ru-hexlet-io-assets-application.css',
-    data: null,
+    contentType: 'text/css',
   },
   {
     path: '/assets/professions/nodejs.png',
     name: 'ru-hexlet-io-assets-professions-nodejs.png',
-    data: null,
+    contentType: 'image/png',
   },
   {
     path: '/packs/js/runtime.js',
     name: 'ru-hexlet-io-packs-js-runtime.js',
-    data: null,
+    contentType: 'text/javascript',
   },
 ];
 
@@ -55,25 +55,19 @@ describe('page-loader', () => {
   beforeAll(async () => {
     // create temp-directory
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
-
-    // read file fixture to resource data
-    for (let resource of resources) {
-      resource.data = await readFile(getFixture(resource.name));
-    }
   });
 
   beforeEach(async () => {
     const indexFile = await readFile(getFixture('index.html'));
-    nock(origin).persist().get(pathname).reply(200, indexFile);
+    nock(origin).get(pathname).reply(200, indexFile);
 
     // fetch fixture resource data
-    for (let resource of resources) {
-      nock(origin).get(resource.path).reply(200, resource.data);
+    for (const resource of resources) {
+      const data = getFixture(resource.name);
+      nock(origin).get(resource.path).replyWithFile(200, data, {
+        'Content-Type': resource.contentType,
+      });
     }
-  });
-
-  afterEach(() => {
-    nock.cleanAll();
   });
 
   test('should return expected html', async () => {
@@ -84,14 +78,12 @@ describe('page-loader', () => {
     expect(result).toBe(expected);
   });
 
-  test.each(resources.map((resource) => [resource.name, resource]))(
-    'should return %s',
-    async (_, { name, data: expected }) => {
-      const result = await readFile(`${tempDir}/${filesFolder}/${name}`);
+  test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
+    const result = await readFile(`${tempDir}/${filesFolder}/${name}`);
+    const expected = await readFile(getFixture(name));
 
-      expect(result).toBe(expected);
-    }
-  );
+    expect(result).toBe(expected);
+  });
 
   test.each([
     [400, '/not-found'],
