@@ -44,13 +44,17 @@ const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filename);
 
 describe('page-loader', () => {
-  beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
+  afterAll(() => {
+    nock.restore();
   });
 
-  test('should returns absolute path to the saved file', async () => {
-    const indexFile = getFixture('index.html');
+  afterEach(() => {
+    nock.cleanAll();
+  });
 
+  beforeEach(async () => {
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+    const indexFile = getFixture('index.html');
     nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
       'Content-Type': 'text/plain',
     });
@@ -62,7 +66,9 @@ describe('page-loader', () => {
         'Content-Type': resource.contentType,
       });
     }
+  });
 
+  test('should returns absolute path to the saved file', async () => {
     const resultPath = await loader(url, tempDir);
 
     const result = await readFile(resultPath);
@@ -74,18 +80,6 @@ describe('page-loader', () => {
   });
 
   test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
-    const indexFile = getFixture('index.html');
-    nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
-      'Content-Type': 'text/plain',
-    });
-
-    // fetch fixture resource data
-    for (const resource of resources) {
-      const data = getFixture(resource.name);
-      nock(origin).persist().get(resource.path).replyWithFile(200, data, {
-        'Content-Type': resource.contentType,
-      });
-    }
     await loader(url, tempDir);
     const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
     const expected = await readFile(getFixture(name));
@@ -97,18 +91,17 @@ describe('page-loader', () => {
     const scope = nock(origin).persist().get('/not-found').reply(400);
     const result = () => loader(`${origin}/not-found`, tempDir);
     await expect(result).rejects.toThrow(Error);
+    expect(scope.isDone()).toBe(true);
   });
 
   test('should return reject with 500', async () => {
     const scope = nock(origin).persist().get('/').reply(500);
-    const result = () => loader(origin, tempDir);
+    const result = () => loader(`${origin}`, tempDir);
     await expect(result).rejects.toThrow(Error);
+    expect(scope.isDone()).toBe(true);
   });
 
   test('should return error for wrong folder', async () => {
-    const scope = nock(origin).persist().get('/').reply(500);
-    const result = () => loader(origin, tempDir);
-    await expect(result).rejects.toThrow(Error);
     await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
   });
 });
