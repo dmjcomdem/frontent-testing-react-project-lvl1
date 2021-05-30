@@ -24,7 +24,7 @@ const loader = async (url = '', folder = process.cwd()) => {
     const folderPath = path.resolve(__dirname, String(folder), folderName);
 
     logger(`fetch ${url}`);
-    const htmlData = await request(url, { responseType: 'text' });
+    const htmlData = await request(url);
 
     logger(`get resources page`);
     const { html, links } = getResource(htmlData, url);
