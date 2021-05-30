@@ -44,14 +44,12 @@ const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filename);
 
 describe('page-loader', () => {
-  beforeAll(async () => {
-    nock.disableNetConnect();
-  });
-
   afterAll(() => {
     nock.restore();
+  });
+
+  afterEach(() => {
     nock.cleanAll();
-    nock.enableNetConnect();
   });
 
   beforeEach(async () => {
