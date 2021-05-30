@@ -42,12 +42,6 @@ const resources = [
 /* utils */
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filename);
-const getAssetsFolderPath = (filepath) => {
-  const { dir } = path.parse(filepath);
-
-  const assetsFolderName = path.basename(filepath, '.html');
-  return path.join(dir, `${assetsFolderName}_files`);
-};
 
 describe('page-loader', () => {
   afterAll(() => {
@@ -67,8 +61,8 @@ describe('page-loader', () => {
 
     // fetch fixture resource data
     for (const resource of resources) {
-      const data = getFixture(`${resourceFiles}/${resource.name}`);
-      nock(origin).get(resource.path).replyWithFile(200, data, {
+      const data = getFixture(resource.name);
+      nock(origin).persist().get(resource.path).replyWithFile(200, data, {
         'Content-Type': resource.contentType,
       });
     }
@@ -76,14 +70,19 @@ describe('page-loader', () => {
 
   test('should returns absolute path to the saved file', async () => {
     const resultPath = await loader(url, tempDir);
+
+    const result = await readFile(resultPath);
+    const expected = await readFile(getFixture(expectedHTML));
+
     await expect(fs.access(resultPath)).resolves.toBe(undefined);
     expect(path.isAbsolute(resultPath)).toBeTruthy();
+    expect(result).toBe(expected);
   });
 
   test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
     await loader(url, tempDir);
     const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
-    const expected = await readFile(getFixture(`${resourceFiles}/${name}`));
+    const expected = await readFile(getFixture(name));
 
     expect(result).toBe(expected);
   });
