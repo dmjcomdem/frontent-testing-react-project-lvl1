@@ -87,12 +87,16 @@ describe('page-loader', () => {
     expect(result).toBe(expected);
   });
 
-  test.each([
-    [400, '/not-found'],
-    [500, '/'],
-  ])('should return reject with %s', async (responseCode, url) => {
-    const scope = nock(origin).persist().get(url).reply(responseCode);
-    const result = () => loader(`${origin}${url}`, tempDir);
+  test('should return reject with 400', async () => {
+    const scope = nock(origin).persist().get('/not-found').reply(400);
+    const result = () => loader(`${origin}/not-found`, tempDir);
+    await expect(result).rejects.toThrow(Error);
+    scope.isDone();
+  });
+
+  test('should return reject with 500', async () => {
+    const scope = nock(origin).persist().get('/').reply(500);
+    const result = () => loader(`${origin}`, tempDir);
     await expect(result).rejects.toThrow(Error);
     scope.isDone();
   });
