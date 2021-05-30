@@ -45,7 +45,7 @@ const loader = async (url = '', folder = process.cwd()) => {
     return filePath;
   } catch (error) {
     logger(`error: ${error}`);
-    throw error;
+    throw new Error(error);
   }
 };
 
