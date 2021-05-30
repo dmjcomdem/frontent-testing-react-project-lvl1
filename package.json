@@ -22,7 +22,7 @@
     "testEnvironment": "node"
   },
   "scripts": {
-    "test": "jest",
+    "test": "npx jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
