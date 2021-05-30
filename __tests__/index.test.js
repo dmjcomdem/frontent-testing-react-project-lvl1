@@ -79,26 +79,26 @@ describe('page-loader', () => {
     await expect(fs.access(resultPath)).resolves.toBe(undefined);
     expect(path.isAbsolute(resultPath)).toBeTruthy();
   });
-  //
-  // test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
-  //   await loader(url, tempDir);
-  //   const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
-  //   const expected = await readFile(getFixture(`${resourceFiles}/${name}`));
-  //
-  //   expect(result).toBe(expected);
-  // });
-  //
-  // test.each([
-  //   [400, '/not-found'],
-  //   [500, '/'],
-  // ])('should return reject with %s', async (responseCode, url) => {
-  //   const scope = nock(origin).get(url).reply(responseCode);
-  //   const result = () => loader(`${origin}${url}`, tempDir);
-  //   await expect(result).rejects.toThrow(Error);
-  //   scope.isDone();
-  // });
-  //
-  // test('should return error for wrong folder', async () => {
-  //   await expect(loader(origin, 'non-existing-folder')).rejects.toThrow();
-  // });
+
+  test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
+    await loader(url, tempDir);
+    const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
+    const expected = await readFile(getFixture(`${resourceFiles}/${name}`));
+
+    expect(result).toBe(expected);
+  });
+
+  test.each([
+    [400, '/not-found'],
+    [500, '/'],
+  ])('should return reject with %s', async (responseCode, url) => {
+    const scope = nock(origin).get(url).reply(responseCode);
+    const result = () => loader(`${origin}${url}`, tempDir);
+    await expect(result).rejects.toThrow(Error);
+    scope.isDone();
+  });
+
+  test('should return error for wrong folder', async () => {
+    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
+  });
 });
