@@ -44,13 +44,13 @@ const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filename);
 
 describe('page-loader', () => {
-  afterAll(() => {
-    nock.restore();
-  });
-
-  afterEach(() => {
-    nock.cleanAll();
-  });
+  // afterAll(() => {
+  //   nock.restore();
+  // });
+  //
+  // afterEach(() => {
+  //   nock.cleanAll();
+  // });
 
   beforeEach(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
