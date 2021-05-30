@@ -56,10 +56,6 @@ describe('page-loader', () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
     const indexFile = getFixture('index.html');
 
-    nock(origin).persist().get('/').replyWithFile(200, indexFile, {
-      'Content-Type': 'text/plain',
-    });
-
     nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
       'Content-Type': 'text/plain',
     });
