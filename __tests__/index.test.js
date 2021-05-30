@@ -61,8 +61,6 @@ describe('page-loader', () => {
   });
 
   beforeEach(async () => {
-    nock.cleanAll();
-
     const indexFile = await readFile(getFixture('index.html'));
     nock(origin).persist().get(pathname).reply(200, indexFile);
 
@@ -70,6 +68,10 @@ describe('page-loader', () => {
     for (let resource of resources) {
       nock(origin).get(resource.path).reply(200, resource.data);
     }
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
   });
 
   test('should return expected html', async () => {
