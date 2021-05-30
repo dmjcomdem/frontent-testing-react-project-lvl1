@@ -68,14 +68,21 @@ describe('page-loader', () => {
     }
   });
 
+  test('should return error for wrong folder', async () => {
+    const scope = nock(origin).persist().get('/').reply(500);
+    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
+  });
+
   test('should returns absolute path to the saved file', async () => {
     const resultPath = await loader(url, tempDir);
-
-    const result = await readFile(resultPath);
-    const expected = await readFile(getFixture(expectedHTML));
-
     await expect(fs.access(resultPath)).resolves.toBe(undefined);
     expect(path.isAbsolute(resultPath)).toBeTruthy();
+  });
+
+  test('should expected original file', async () => {
+    const resultPath = await loader(url, tempDir);
+    const result = await readFile(resultPath);
+    const expected = await readFile(getFixture(expectedHTML));
     expect(result).toBe(expected);
   });
 
@@ -83,7 +90,6 @@ describe('page-loader', () => {
     await loader(url, tempDir);
     const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
     const expected = await readFile(getFixture(name));
-
     expect(result).toBe(expected);
   });
 
@@ -99,9 +105,5 @@ describe('page-loader', () => {
     const result = () => loader(`${origin}`, tempDir);
     await expect(result).rejects.toThrow(Error);
     expect(scope.isDone()).toBe(true);
-  });
-
-  test('should return error for wrong folder', async () => {
-    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
   });
 });
