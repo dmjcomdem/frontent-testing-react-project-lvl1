@@ -33,17 +33,17 @@ describe('getName', () => {
   });
 
   it('should return empty file', () => {
-    const result = getName('');
-    expect(result).toBe('');
+    const result = () => getName('');
+    expect(result).toThrow();
   });
 
   it('should return empty folder', () => {
-    const result = getName('', 'folder');
-    expect(result).toBe('');
+    const result = () => getName('', 'folder');
+    expect(result).toThrow();
   });
 
   it('should return empty folder for no arguments', () => {
-    const result = getName();
-    expect(result).toBe('');
+    const result = () => getName();
+    expect(result).toThrow();
   });
 });

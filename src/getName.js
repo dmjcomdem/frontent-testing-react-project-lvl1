@@ -1,7 +1,9 @@
 import path from 'path';
 
-const getName = (url, type = 'file') => {
-  if (!url) return '';
+const getName = (url = '', type = 'file') => {
+  if (!url) {
+    throw new Error('Error Url');
+  }
 
   const { host, pathname } = new URL(url);
   const urlPath = `${host}${pathname === '/' ? '' : pathname}`;
