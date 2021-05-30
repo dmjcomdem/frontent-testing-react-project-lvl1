@@ -1,7 +1,7 @@
 install: install-deps
 
 run:
-	bin/page-loader.js
+	src/bin/page-loader.js
 
 install-deps:
 	npm install
