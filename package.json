@@ -23,7 +23,6 @@
   },
   "scripts": {
     "test": "npx jest",
-    "jest": "jest",
     "test:watch": "jest --watch"
   },
   "dependencies": {
