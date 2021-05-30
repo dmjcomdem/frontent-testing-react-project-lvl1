@@ -18,8 +18,8 @@ const loader = async (url, folder = process.cwd()) => {
     const fileName = getName(url);
     const folderName = getName(url, 'folder');
 
-    const filePath = path.resolve(__dirname, folder, fileName);
-    const folderPath = path.resolve(__dirname, folder, folderName);
+    const filePath = path.resolve(__dirname, String(folder), fileName);
+    const folderPath = path.resolve(__dirname, String(folder), folderName);
 
     logger(`fetch ${url}`);
     const htmlData = await request(url, { responseType: 'text' });
