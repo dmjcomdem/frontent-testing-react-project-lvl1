@@ -2,13 +2,13 @@ import fs from 'fs/promises';
 import path from 'path';
 import debug from 'debug';
 
-import { getName } from './getName';
-import { request } from './request';
-import { getResource } from './getResource';
+import getName from './getName';
+import request from './request';
+import getResource from './getResource';
 
 const logger = debug('page-loader');
 
-export const loader = async (url, folder) => {
+const loader = async (url, folder) => {
   if (!url) {
     logger('url is empty');
     return '';
@@ -45,3 +45,5 @@ export const loader = async (url, folder) => {
     throw error;
   }
 };
+
+export default loader;

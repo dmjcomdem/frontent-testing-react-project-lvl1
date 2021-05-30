@@ -1,5 +1,5 @@
 import cheerio from 'cheerio';
-import { getName } from './getName';
+import getName from './getName';
 
 const tagsMap = {
   img: 'src',
@@ -33,3 +33,5 @@ export const getResource = (data, url) => {
 
   return { html: $.html(), links };
 };
+
+export default getResource;

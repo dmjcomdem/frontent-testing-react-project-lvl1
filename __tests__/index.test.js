@@ -7,7 +7,7 @@ import nock from 'nock';
 import axios from 'axios';
 
 /* file loader */
-import { loader } from '../src';
+import loader from '../src';
 
 /* settings */
 axios.defaults.adapter = require('axios/lib/adapters/http');

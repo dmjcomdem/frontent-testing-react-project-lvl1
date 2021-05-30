@@ -1,4 +1,4 @@
-import { getName } from '../src/getName';
+import getName from '../src/getName';
 
 describe('getName', () => {
   const origin = 'https://page-loader.io';

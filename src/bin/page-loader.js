@@ -2,7 +2,7 @@
 
 import program from 'commander';
 import { version, description } from '../../package.json';
-import { loader } from '..';
+import loader from '..';
 
 const run = () => {
   program

@@ -1,6 +1,6 @@
 import path from 'path';
 
-export const getName = (url, type = 'file') => {
+const getName = (url, type = 'file') => {
   if (!url) return '';
 
   const { host, pathname } = new URL(url);
@@ -11,3 +11,5 @@ export const getName = (url, type = 'file') => {
 
   return `${fileName}${postfix}`;
 };
+
+export default getName;
