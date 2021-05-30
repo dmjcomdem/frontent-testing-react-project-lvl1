@@ -103,6 +103,10 @@ describe('page-loader', () => {
   });
 
   test('should return error for wrong folder', async () => {
+    const scope = nock(origin).persist().get('/').reply(500);
+    const result = () => loader(origin, tempDir);
+    await expect(result).rejects.toThrow(Error);
     await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
+    expect(scope.isDone()).toBe(true);
   });
 });
