@@ -41,4 +41,9 @@ describe('getName', () => {
     const result = getName('', 'folder');
     expect(result).toBe('');
   });
+
+  it('should return empty folder for no arguments', () => {
+    const result = getName();
+    expect(result).toBe('');
+  });
 });

@@ -42,6 +42,12 @@ const resources = [
 /* utils */
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filename);
+const getAssetsFolderPath = (filepath) => {
+  const { dir } = path.parse(filepath);
+
+  const assetsFolderName = path.basename(filepath, '.html');
+  return path.join(dir, `${assetsFolderName}_files`);
+};
 
 describe('page-loader', () => {
   afterAll(() => {
@@ -68,15 +74,10 @@ describe('page-loader', () => {
     }
   });
 
-  test('should return expected html', async () => {
+  test('should returns absolute path to the saved file', async () => {
     const resultPath = await loader(url, tempDir);
-    const result = await readFile(resultPath);
-    const expected = await readFile(getFixture(expectedHTML));
-
     await expect(fs.access(resultPath)).resolves.toBe(undefined);
     expect(path.isAbsolute(resultPath)).toBeTruthy();
-
-    expect(result).toBe(expected);
   });
 
   test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
@@ -98,6 +99,6 @@ describe('page-loader', () => {
   });
 
   test('should return error for wrong folder', async () => {
-    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
+    await expect(loader(origin, 'non-existing-folder')).rejects.toThrow();
   });
 });
