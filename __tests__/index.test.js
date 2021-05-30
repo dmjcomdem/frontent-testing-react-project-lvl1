@@ -91,14 +91,14 @@ describe('page-loader', () => {
     const scope = nock(origin).persist().get('/not-found').reply(400);
     const result = () => loader(`${origin}/not-found`, tempDir);
     await expect(result).rejects.toThrow(Error);
-    scope.isDone();
+    expect(scope.isDone()).toBe(true);
   });
 
   test('should return reject with 500', async () => {
     const scope = nock(origin).persist().get('/').reply(500);
     const result = () => loader(`${origin}`, tempDir);
     await expect(result).rejects.toThrow(Error);
-    scope.isDone();
+    expect(scope.isDone()).toBe(true);
   });
 
   test('should return error for wrong folder', async () => {
