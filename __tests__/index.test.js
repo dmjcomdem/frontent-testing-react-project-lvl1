@@ -46,6 +46,9 @@ const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filenam
 describe('page-loader', () => {
   beforeEach(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
+  });
+
+  test('should returns absolute path to the saved file', async () => {
     const indexFile = getFixture('index.html');
 
     nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
@@ -59,9 +62,7 @@ describe('page-loader', () => {
         'Content-Type': resource.contentType,
       });
     }
-  });
 
-  test('should returns absolute path to the saved file', async () => {
     const resultPath = await loader(url, tempDir);
 
     const result = await readFile(resultPath);
@@ -73,6 +74,18 @@ describe('page-loader', () => {
   });
 
   test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
+    const indexFile = getFixture('index.html');
+    nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
+      'Content-Type': 'text/plain',
+    });
+
+    // fetch fixture resource data
+    for (const resource of resources) {
+      const data = getFixture(resource.name);
+      nock(origin).persist().get(resource.path).replyWithFile(200, data, {
+        'Content-Type': resource.contentType,
+      });
+    }
     await loader(url, tempDir);
     const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
     const expected = await readFile(getFixture(name));
