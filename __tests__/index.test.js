@@ -40,21 +40,20 @@ const resources = [
 ];
 
 /* utils */
+
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
-const getFixture = (fileName) => path.join(__dirname, '../__fixtures__', fileName);
+const getFixture = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 
 describe('page-loader', () => {
-  afterAll(() => {
-    nock.restore();
-  });
-
-  afterEach(() => {
-    nock.cleanAll();
-  });
-
   beforeAll(async () => {
+    nock.disableNetConnect();
     // create temp-directory
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
+  });
+
+  afterAll(() => {
+    nock.cleanAll();
+    nock.enableNetConnect();
   });
 
   beforeEach(async () => {
