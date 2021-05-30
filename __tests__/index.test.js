@@ -91,7 +91,7 @@ describe('page-loader', () => {
     [400, '/not-found'],
     [500, '/'],
   ])('should return reject with %s', async (responseCode, url) => {
-    const scope = nock(origin).get(url).reply(responseCode);
+    const scope = nock(origin).persist().get(url).reply(responseCode);
     const result = () => loader(`${origin}${url}`, tempDir);
     await expect(result).rejects.toThrow(Error);
     scope.isDone();
