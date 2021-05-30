@@ -1,9 +1,9 @@
 import fs from 'fs/promises';
 import path from 'path';
 import debug from 'debug';
-import axios from 'axios';
 
 import getName from './getName';
+import request from './request';
 import getResource from './getResource';
 
 const logger = debug('page-loader');
@@ -22,7 +22,7 @@ const loader = async (url, folder = process.cwd()) => {
     const folderPath = path.resolve(__dirname, folder, folderName);
 
     logger(`fetch ${url}`);
-    const { data: htmlData } = await axios(url, { responseType: 'text' });
+    const htmlData = await request(url, { responseType: 'text' });
 
     logger(`get resources page`);
     const { html, links } = getResource(htmlData, url);
@@ -33,8 +33,8 @@ const loader = async (url, folder = process.cwd()) => {
     logger(`write file ${filePath}`);
     await fs.writeFile(filePath, html);
 
-    for await (const { href, name } of links) {
-      const { data: response } = await axios(href, { responseType: 'arraybuffer' });
+    for await (let { href, name } of links) {
+      const response = await request(href, { responseType: 'arraybuffer' });
       await fs.writeFile(`${folderPath}/${name}`, response);
       logger(`✔ fetch and write resource ${href}`);
     }

@@ -1,5 +1,8 @@
 import axios from 'axios';
 
-const request = (url, options) => axios(url, options).then((response) => response?.data);
+export const request = async (url, options) => {
+  const { data } = await axios(url, options).then();
+  return data;
+};
 
 export default request;

@@ -1,4 +1,3 @@
-import { afterAll, beforeEach, describe, expect } from '@jest/globals';
 import os from 'os';
 import path from 'path';
 import { promises as fs } from 'fs';
@@ -41,23 +40,22 @@ const resources = [
 ];
 
 /* utils */
-
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
-const getFixture = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const getFixture = (filename) => path.join(__dirname, '../__fixtures__', filename);
 
 describe('page-loader', () => {
   beforeAll(async () => {
     nock.disableNetConnect();
-    // create temp-directory
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
   });
 
   afterAll(() => {
+    nock.restore();
     nock.cleanAll();
     nock.enableNetConnect();
   });
 
   beforeEach(async () => {
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-folder'));
     const indexFile = getFixture('index.html');
     nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
       'Content-Type': 'text/plain',
@@ -84,6 +82,7 @@ describe('page-loader', () => {
   });
 
   test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
+    await loader(url, tempDir);
     const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
     const expected = await readFile(getFixture(`${resourceFiles}/${name}`));
 
