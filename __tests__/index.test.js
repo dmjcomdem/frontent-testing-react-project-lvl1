@@ -101,7 +101,7 @@ describe('page-loader', () => {
 
   test('should return reject with 500', async () => {
     const scope = nock(origin).persist().get('/').reply(500);
-    const result = () => loader(`${origin}`, tempDir);
+    const result = () => loader(origin, tempDir);
     await expect(result).rejects.toThrow(Error);
     expect(scope.isDone()).toBe(true);
   });
