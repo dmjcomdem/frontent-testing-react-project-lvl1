@@ -60,8 +60,5 @@
       "prettier --config .prettierrc.json --write",
       "eslint"
     ]
-  },
-  "quokka": {
-    "babel": true
   }
 }
