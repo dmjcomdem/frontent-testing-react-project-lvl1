@@ -74,6 +74,9 @@ describe('page-loader', () => {
     const result = await readFile(resultPath);
     const expected = await readFile(getFixture(htmlFileName));
 
+    await expect(fs.access(resultPath)).resolves.toBe(undefined);
+    expect(path.isAbsolute(resultPath)).toBeTruthy();
+
     expect(result).toBe(expected);
   });
 
