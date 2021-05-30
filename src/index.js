@@ -8,7 +8,7 @@ import getResource from './getResource';
 
 const logger = debug('page-loader');
 
-const loader = async (url, folder) => {
+const loader = async (url, folder = './') => {
   if (!url) {
     logger('url is empty');
     return '';
