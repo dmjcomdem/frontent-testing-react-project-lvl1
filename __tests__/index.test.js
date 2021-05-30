@@ -16,6 +16,7 @@ axios.defaults.adapter = require('axios/lib/adapters/http');
 const origin = 'https://ru.hexlet.io';
 const pathname = '/courses';
 const url = `${origin}${pathname}`;
+const expectedHTML = 'ru-hexlet-io-courses.html';
 const resourceFiles = 'ru-hexlet-io-courses_files';
 let tempDir = '';
 
@@ -56,14 +57,14 @@ describe('page-loader', () => {
   });
 
   beforeEach(async () => {
-    const indexFile = getFixture('ru-hexlet-io-courses-with-assets.html');
+    const indexFile = getFixture('index.html');
     nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
       'Content-Type': 'text/plain',
     });
 
     // fetch fixture resource data
     for (const resource of resources) {
-      const data = getFixture(resource.name);
+      const data = getFixture(`${resourceFiles}/${resource.name}`);
       nock(origin).get(resource.path).replyWithFile(200, data, {
         'Content-Type': resource.contentType,
       });
@@ -73,7 +74,7 @@ describe('page-loader', () => {
   test('should return expected html', async () => {
     const resultPath = await loader(url, tempDir);
     const result = await readFile(resultPath);
-    const expected = await readFile(getFixture('expected/ru-hexlet-io-courses-with-assets.html'));
+    const expected = await readFile(getFixture(expectedHTML));
 
     await expect(fs.access(resultPath)).resolves.toBe(undefined);
     expect(path.isAbsolute(resultPath)).toBeTruthy();
@@ -83,7 +84,7 @@ describe('page-loader', () => {
 
   test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
     const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
-    const expected = await readFile(getFixture(name));
+    const expected = await readFile(getFixture(`${resourceFiles}/${name}`));
 
     expect(result).toBe(expected);
   });
