@@ -1,6 +1,9 @@
 import { promises as fs } from 'fs';
 import path from 'path';
+import axios from 'axios';
+
 import debug from 'debug';
+import 'axios-debug-log';
 import chalk from 'chalk';
 
 import getName from './getName';
@@ -28,7 +31,7 @@ const loader = async (url, folder = process.cwd()) => {
     const folderPath = path.resolve(folder, folderName);
 
     logger(`fetch ${url}`);
-    const htmlData = await request(url);
+    const { data: htmlData } = await axios(url);
 
     logger(`get resources page`);
     const { html, links } = getResource(htmlData, url);
@@ -41,7 +44,7 @@ const loader = async (url, folder = process.cwd()) => {
 
     if (links.length) {
       for await (let { href, name } of links) {
-        const response = await request(href, { responseType: 'arraybuffer' });
+        const { data: response } = await axios(href, { responseType: 'arraybuffer' });
         await fs.writeFile(`${folderPath}/${name}`, response);
         console.log(`${greenCheckChar} ${href}`);
         logger(`${href} was successfully loaded`);

@@ -5,13 +5,14 @@ import { promises as fs } from 'fs';
 /* npm-package */
 import nock from 'nock';
 import axios from 'axios';
+import axiosHttpAdapter from 'axios/lib/adapters/http';
 
 /* file loader */
 import loader from '../src/index';
 
 /* settings */
 nock.disableNetConnect();
-axios.defaults.adapter = require('axios/lib/adapters/http');
+axios.defaults.adapter = axiosHttpAdapter;
 
 /* variables */
 const origin = 'https://ru.hexlet.io';
@@ -26,76 +27,58 @@ const resources = [
   {
     path: '/assets/application.css',
     name: 'ru-hexlet-io-assets-application.css',
-    contentType: 'text/css',
   },
   {
     path: '/assets/professions/nodejs.png',
     name: 'ru-hexlet-io-assets-professions-nodejs.png',
-    contentType: 'image/png',
   },
   {
     path: '/packs/js/runtime.js',
     name: 'ru-hexlet-io-packs-js-runtime.js',
-    contentType: 'text/javascript',
   },
 ];
 
 /* utils */
 const getFixture = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
+const readFixture = (filename) => fs.readFile(getFixture(filename), 'utf-8');
 
 describe('page-loader', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+  });
 
-    // const indexFile = await readFile(getFixture('index.html'));
+  test('page loaded and saved with resources', async () => {
+    const indexFile = await readFixture('index.html');
+    let scope = nock(origin).get(pathname).times(2).reply(200, indexFile);
 
-    let beforeHtml = await readFile(getFixture('index.html'));
-    let imgFile = await readFile(getFixture('ru-hexlet-io-assets-professions-nodejs.png'));
-    let scriptFile = await readFile(getFixture('ru-hexlet-io-packs-js-runtime.js'));
-    let cssFile = await readFile(getFixture('ru-hexlet-io-assets-application.css'));
-
-    // for (const resource of resources) {
-    //   const data = await readFile(getFixture(resource.name));
-    //   nock(origin).persist().get(resource.path).replyWithFile(200, data, {
-    //     'Content-Type': resource.contentType,
-    //   });
-    // }
-
-    nock('https://ru.hexlet.io')
-      .get('/courses')
-      .times(2)
-      .reply(200, beforeHtml)
-      .get('/assets/professions/nodejs.png')
-      .reply(200, imgFile)
-      .get('/packs/js/runtime.js')
-      .reply(200, scriptFile)
-      .get('/assets/application.css')
-      .reply(200, cssFile);
+    // fetch fixture resource data
+    for (const resource of resources) {
+      const data = await readFixture(resource.name);
+      scope.get(resource.path).reply(200, data);
+    }
 
     await loader(url, tempDir);
+    const actualHtml = await readFile(`${tempDir}/${expectedHTML}`);
+    const expectedHtml = await readFile(getFixture(expectedHTML));
+    expect(actualHtml).toBe(expectedHtml);
+
+    for (const { name } of resources) {
+      const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
+      const expected = await readFile(getFixture(name));
+      expect(result).toBe(expected);
+    }
+    scope.isDone();
   });
 
-  test('should expected result file', async () => {
-    const result = await readFile(`${tempDir}/ru-hexlet-io-courses.html`);
-    let expectedHtml = await readFile(getFixture('ru-hexlet-io-courses.html'));
-    expect(result).toBe(expectedHtml);
-  });
-
-  test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
-    const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
-    const expected = await readFile(getFixture(name));
-    expect(result).toBe(expected);
-  });
-
-  test('should return reject with 500', async () => {
-    const scope = nock(origin).get('/').reply(500);
-    const result = () => loader(`${origin}/`, tempDir);
+  test('throw error if page not exist', async () => {
+    const scope = nock(origin).persist().get(pathname).reply(500);
+    const result = () => loader(url, tempDir);
     await expect(result).rejects.toThrow(Error);
     scope.isDone();
   });
 
-  test('should return error for wrong folder', async () => {
-    await expect(loader('https://ru.hexlet.io/courses', 'notExistedDir')).rejects.toThrowError();
+  test('throw error if output dit not exist', async () => {
+    await expect(loader(url, 'notExistedDir')).rejects.toThrowError();
   });
 });
