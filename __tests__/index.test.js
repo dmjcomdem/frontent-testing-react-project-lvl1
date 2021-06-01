@@ -75,7 +75,7 @@ describe('page-loader', () => {
   });
 
   test('should expected result file', async () => {
-    await loader('https://ru.hexlet.io/courses', tempDir);
+    await loader(url, tempDir);
     const result = await readFile(`${tempDir}/ru-hexlet-io-courses.html`);
     let expectedHtml = await readFile(getFixture('ru-hexlet-io-courses.html'));
     expect(result).toBe(expectedHtml);

@@ -37,14 +37,14 @@ const loader = async (url, folder = process.cwd()) => {
     await fs.writeFile(filePath, html);
     logger(`write file ${filePath}`);
 
-    for await (let { href, name } of links) {
-      logger(`✔ start fetch resource [${name}] - ${href}`);
-      const response = await request(href, { responseType: 'arraybuffer' });
-      await fs.writeFile(`${folderPath}/${name}`, response);
-      logger(`✔ fetch and write resource ${href}`);
+    if (links.length) {
+      for await (let { href, name } of links) {
+        logger(`✔ start fetch resource [${name}] - ${href}`);
+        const response = await request(href, { responseType: 'arraybuffer' });
+        await fs.writeFile(`${folderPath}/${name}`, response);
+        logger(`✔ fetch and write resource ${href}`);
+      }
     }
-
-    return filePath;
   } catch (error) {
     logger(`error: ${error}`);
     throw new Error(error);
