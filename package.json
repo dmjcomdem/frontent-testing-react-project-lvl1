@@ -1,19 +1,19 @@
 {
   "name": "@hexlet/code",
-  "version": "0.0.1",
-  "description": "Page loader",
+  "author": "dmjcomdem",
+  "version": "1.0.0",
+  "description": "Command-line tool for downloading page loader resources",
+  "license": "ISC",
+  "engines": {
+    "node": ">=14"
+  },
   "bin": {
     "page-loader": "bin/page-loader.js"
   },
   "main": "src/index.js",
-  "engines": {
-    "node": ">=14"
-  },
   "scripts": {
     "test": "npx jest --bail"
   },
-  "author": "Ruslan Sukharev",
-  "license": "ISC",
   "jest": {
     "testEnvironment": "node",
     "transform": {
