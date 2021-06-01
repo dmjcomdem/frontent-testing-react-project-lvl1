@@ -75,6 +75,8 @@ describe('pageLoader', () => {
   });
 
   it('throw error if output dit not exist', async () => {
-    await expect(pageLoader('https://ru.hexlet.io/courses', 'notExistedDir')).rejects.toThrowError();
+    await expect(pageLoader('https://ru.hexlet.io/courses', 'notExistedDir')).rejects.toThrowError(
+      "ENOENT: no such file or directory, access 'notExistedDir'"
+    );
   });
 });
