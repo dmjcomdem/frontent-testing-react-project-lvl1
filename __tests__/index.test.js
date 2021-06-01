@@ -1,68 +1,42 @@
-import os from 'os';
-import path from 'path';
 import { promises as fs } from 'fs';
-
-/* npm-package */
-import nock from 'nock';
+import path from 'path';
+import axiosHttpAdapter from 'axios/lib/adapters/http';
 import axios from 'axios';
+import nock from 'nock';
+import os from 'os';
+import pageLoader from '../src/index.js';
 
-/* file loader */
-import loader from '../src';
-
-/* settings */
 nock.disableNetConnect();
-axios.defaults.adapter = require('axios/lib/adapters/http');
+axios.defaults.adapter = axiosHttpAdapter;
 
-/* variables */
-const origin = 'https://ru.hexlet.io';
-const pathname = '/courses';
-const url = `${origin}${pathname}`;
-const expectedHTML = 'ru-hexlet-io-courses.html';
-const resourceFiles = 'ru-hexlet-io-courses_files';
-let tempDir = '';
+const getFixturePath = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
+const readFile = (filename) => fs.readFile(getFixturePath(filename), 'utf-8');
 
-/* resources-data */
-const resources = [
-  {
-    path: '/assets/application.css',
-    name: 'ru-hexlet-io-assets-application.css',
-    contentType: 'text/css',
-  },
-  {
-    path: '/assets/professions/nodejs.png',
-    name: 'ru-hexlet-io-assets-professions-nodejs.png',
-    contentType: 'image/png',
-  },
-  {
-    path: '/packs/js/runtime.js',
-    name: 'ru-hexlet-io-packs-js-runtime.js',
-    contentType: 'text/javascript',
-  },
-];
+const expectedDirName = 'ru-hexlet-io-courses_files';
+const expectedHtmlFileName = 'ru-hexlet-io-courses.html';
+const expectedImgFileName = 'ru-hexlet-io-assets-professions-nodejs.png';
+const expectedCssFileName = 'ru-hexlet-io-assets-application.css';
+const expectedScriptFileName = 'ru-hexlet-io-packs-js-runtime.js';
 
-/* utils */
-const getFixture = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
-const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
+let tempDirPath;
+let beforeHtml;
+let imgFile;
+let scriptFile;
+let cssFile;
+let expectedHtml;
 
-describe('page-loader', () => {
-  beforeEach(async () => {
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+beforeAll(async () => {
+  beforeHtml = await readFile('before.html');
+  imgFile = await readFile('nodejs.png');
+  scriptFile = await readFile('runtime.js');
+  cssFile = await readFile('application.css');
+  expectedHtml = await readFile('expected.html');
+  tempDirPath = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+});
 
-    // const indexFile = await readFile(getFixture('index.html'));
-
-    let beforeHtml = await readFile(getFixture('index.html'));
-    let imgFile = await readFile(getFixture('ru-hexlet-io-assets-professions-nodejs.png'));
-    let scriptFile = await readFile(getFixture('ru-hexlet-io-packs-js-runtime.js'));
-    let cssFile = await readFile(getFixture('ru-hexlet-io-assets-application.css'));
-
-    // for (const resource of resources) {
-    //   const data =  await readFile(getFixture(resource.name));
-    //   nock(origin).persist().get(resource.path).replyWithFile(200, data, {
-    //     'Content-Type': resource.contentType,
-    //   });
-    // }
-
-    nock('https://ru.hexlet.io')
+describe('pageLoader', () => {
+  it('page loaded and saved with resources', async () => {
+    const scope = nock('https://ru.hexlet.io')
       .get('/courses')
       .times(2)
       .reply(200, beforeHtml)
@@ -72,43 +46,37 @@ describe('page-loader', () => {
       .reply(200, scriptFile)
       .get('/assets/application.css')
       .reply(200, cssFile);
+    await pageLoader('https://ru.hexlet.io/courses', tempDirPath);
+    scope.isDone();
+
+    const actualHtml = await fs.readFile(path.join(tempDirPath, expectedHtmlFileName), 'utf-8');
+    expect(actualHtml).toEqual(expectedHtml);
+
+    const actualImgFile = await fs.readFile(path.join(tempDirPath, expectedDirName, expectedImgFileName), 'utf-8');
+    expect(actualImgFile).toEqual(imgFile);
+
+    const actualScriptFile = await fs.readFile(
+      path.join(tempDirPath, expectedDirName, expectedScriptFileName),
+      'utf-8'
+    );
+    expect(actualScriptFile).toEqual(scriptFile);
+
+    const actualCssFile = await fs.readFile(path.join(tempDirPath, expectedDirName, expectedCssFileName), 'utf-8');
+    expect(actualCssFile).toEqual(cssFile);
   });
 
-  // test('should returns absolute path to the saved file', async () => {
-  //   const resultPath = await loader(url, tempDir);
-  //   await expect(fs.access(resultPath)).resolves.toBe(undefined);
-  //   expect(path.isAbsolute(resultPath)).toBeTruthy();
-  // });
+  it('throw error if page not exist', async () => {
+    const scope = nock('https://ru.hexlet.io').get('/courses').reply(500);
 
-  test('should expected result file', async () => {
-    await loader('https://ru.hexlet.io/courses', tempDir);
-    const result = await readFile(`${tempDir}/ru-hexlet-io-courses.html`);
-    let expectedHtml = await readFile(getFixture('ru-hexlet-io-courses.html'));
-    expect(result).toBe(expectedHtml);
-  });
-
-  test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
-    await loader(url, tempDir);
-    const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
-    const expected = await readFile(getFixture(name));
-    expect(result).toBe(expected);
-  });
-
-  test('should return reject with 400', async () => {
-    const scope = nock(origin).get('/not-found').reply(400);
-    const result = () => loader(`${origin}/not-found`, tempDir);
-    await expect(result).rejects.toThrow(Error);
+    await expect(pageLoader('https://ru.hexlet.io/courses', tempDirPath)).rejects.toThrowError(
+      'Request failed with status code 500'
+    );
     scope.isDone();
   });
 
-  test('should return reject with 500', async () => {
-    const scope = nock(origin).get('/').reply(500);
-    const result = () => loader(`${origin}/`, tempDir);
-    await expect(result).rejects.toThrow(Error);
-    scope.isDone();
-  });
-
-  test('should return error for wrong folder', async () => {
-    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
+  it('throw error if output dit not exist', async () => {
+    await expect(pageLoader('https://ru.hexlet.io/courses', 'notExistedDir')).rejects.toThrowError(
+      "ENOENT: no such file or directory, access 'notExistedDir'"
+    );
   });
 });
