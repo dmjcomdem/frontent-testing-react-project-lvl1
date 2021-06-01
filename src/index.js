@@ -1,12 +1,14 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import debug from 'debug';
+import chalk from 'chalk';
 
 import getName from './getName';
 import request from './request';
 import getResource from './getResource';
 
 const logger = debug('page-loader');
+const greenCheckChar = chalk.green('\u2705 ');
 
 const loader = async (url, folder = process.cwd()) => {
   try {
@@ -39,12 +41,14 @@ const loader = async (url, folder = process.cwd()) => {
 
     if (links.length) {
       for await (let { href, name } of links) {
-        logger(`✔ start fetch resource [${name}] - ${href}`);
         const response = await request(href, { responseType: 'arraybuffer' });
         await fs.writeFile(`${folderPath}/${name}`, response);
-        logger(`✔ fetch and write resource ${href}`);
+        console.log(`${greenCheckChar} ${href}`);
+        logger(`${href} was successfully loaded`);
       }
     }
+
+    return filePath;
   } catch (error) {
     logger(`error: ${error}`);
     throw new Error(error);

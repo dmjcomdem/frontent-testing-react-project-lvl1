@@ -23,7 +23,7 @@
   },
   "scripts": {
     "build": "NODE_ENV=production babel ./src --out-dir dist --source-maps inline",
-    "test": "npx jest --colors --runInBand --bail",
+    "test": "npx jest --bail",
     "test:watch": "jest --watch"
   },
   "dependencies": {
@@ -51,6 +51,7 @@
     "jest-cli": "^26.6.3",
     "lint-staged": "^11.0.0",
     "nock": "^13.0.11",
-    "prettier": "^2.2.1"
+    "prettier": "^2.2.1",
+    "chalk": "^4.1.1"
   }
 }

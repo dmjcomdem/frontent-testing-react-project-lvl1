@@ -7,10 +7,16 @@ const tagsMap = {
   script: 'src',
 };
 
+const isLocalURL = (url, origin) => {
+  if (url === undefined) {
+    return false;
+  }
+  return new URL(origin).origin === new URL(url, origin).origin;
+};
+
 export const getResource = (data, url) => {
   const links = [];
   const $ = cheerio.load(data);
-  const { origin } = new URL(url);
   const folder = getName(url, 'folder');
 
   Object.entries(tagsMap).forEach(([tag, attr]) => {
@@ -18,13 +24,11 @@ export const getResource = (data, url) => {
       const value = $(el).attr(attr);
       if (!value) return;
 
-      const link = new URL(value, origin);
-
-      if (link.origin !== origin) {
+      if (!isLocalURL(value, url)) {
         return;
       }
 
-      const href = link.toString();
+      const href = new URL(value, url).toString();
       const name = getName(href);
       const path = `${folder}/${name}`;
 

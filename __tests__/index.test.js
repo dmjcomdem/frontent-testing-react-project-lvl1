@@ -75,8 +75,8 @@ describe('page-loader', () => {
   });
 
   test('should expected result file', async () => {
-    await loader(url, tempDir);
-    const result = await readFile(`${tempDir}/ru-hexlet-io-courses.html`);
+    const filePath = await loader(url, tempDir);
+    const result = await readFile(filePath);
     let expectedHtml = await readFile(getFixture('ru-hexlet-io-courses.html'));
     expect(result).toBe(expectedHtml);
   });
@@ -86,13 +86,6 @@ describe('page-loader', () => {
     const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
     const expected = await readFile(getFixture(name));
     expect(result).toBe(expected);
-  });
-
-  test('should return reject with 400', async () => {
-    const scope = nock(origin).get('/not-found').reply(400);
-    const result = () => loader(`${origin}/not-found`, tempDir);
-    await expect(result).rejects.toThrow(Error);
-    scope.isDone();
   });
 
   test('should return reject with 500', async () => {
