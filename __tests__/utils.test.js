@@ -1,4 +1,4 @@
-import { isLocalURL, getResourceUrlAttr } from '../src/log/utils';
+import { isLocalURL, getResourceUrlAttr } from '../src/utils';
 
 describe('utils', () => {
   it('isLocalURL', () => {
