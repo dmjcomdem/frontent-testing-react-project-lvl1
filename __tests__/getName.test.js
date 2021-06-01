@@ -1,6 +1,6 @@
-import getName from '../src/getName';
+import getName from '../src_log/getName';
 
-describe('getName', () => {
+describe.skip('getName', () => {
   const origin = 'https://page-loader.io';
   const pathname = 'courses';
   const baseURL = `${origin}/${pathname}`;
