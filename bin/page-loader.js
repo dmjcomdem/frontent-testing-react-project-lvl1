@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
-import pageLoader from '../src/index.js';
+import pageLoader from '../src/log';
 
 const program = new Command();
 program.option('-o, --output <type>', 'path to save file', process.cwd());

@@ -4,7 +4,7 @@ import axiosHttpAdapter from 'axios/lib/adapters/http';
 import axios from 'axios';
 import nock from 'nock';
 import os from 'os';
-import pageLoader from '../src/index.js';
+import pageLoader from '../src/log';
 
 nock.disableNetConnect();
 axios.defaults.adapter = axiosHttpAdapter;
