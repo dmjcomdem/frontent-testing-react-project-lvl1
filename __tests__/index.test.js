@@ -80,29 +80,29 @@ describe('page-loader', () => {
     let expectedHtml = await readFile(getFixture('ru-hexlet-io-courses.html'));
     expect(result).toBe(expectedHtml);
   });
-  //
-  // test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
-  //   await loader(url, tempDir);
-  //   const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
-  //   const expected = await readFile(getFixture(name));
-  //   expect(result).toBe(expected);
-  // });
-  //
-  // test('should return reject with 400', async () => {
-  //   const scope = nock(origin).get('/not-found').reply(400);
-  //   const result = () => loader(`${origin}/not-found`, tempDir);
-  //   await expect(result).rejects.toThrow(Error);
-  //   scope.isDone();
-  // });
-  //
-  // test('should return reject with 500', async () => {
-  //   const scope = nock(origin).get('/').reply(500);
-  //   const result = () => loader(`${origin}/`, tempDir);
-  //   await expect(result).rejects.toThrow(Error);
-  //   scope.isDone();
-  // });
-  //
-  // test('should return error for wrong folder', async () => {
-  //   await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
-  // });
+
+  test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
+    await loader(url, tempDir);
+    const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
+    const expected = await readFile(getFixture(name));
+    expect(result).toBe(expected);
+  });
+
+  test('should return reject with 400', async () => {
+    const scope = nock(origin).get('/not-found').reply(400);
+    const result = () => loader(`${origin}/not-found`, tempDir);
+    await expect(result).rejects.toThrow(Error);
+    scope.isDone();
+  });
+
+  test('should return reject with 500', async () => {
+    const scope = nock(origin).get('/').reply(500);
+    const result = () => loader(`${origin}/`, tempDir);
+    await expect(result).rejects.toThrow(Error);
+    scope.isDone();
+  });
+
+  test('should return error for wrong folder', async () => {
+    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
+  });
 });
