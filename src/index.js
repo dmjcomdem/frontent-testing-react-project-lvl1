@@ -16,7 +16,7 @@ const loader = async (url, folder = process.cwd()) => {
 
     if (!url && typeof url !== 'string') {
       logger('URL is empty');
-      return 'URL is empty';
+      return Promise.reject('URL is empty');
     }
 
     await fs.access(folder);

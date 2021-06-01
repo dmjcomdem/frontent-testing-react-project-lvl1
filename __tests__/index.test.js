@@ -45,7 +45,7 @@ const getFixture = (filename) => path.join(__dirname, '..', '__fixtures__', file
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 
 describe('page-loader', () => {
-  beforeEach(async () => {
+  beforeAll(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
 
     // const indexFile = await readFile(getFixture('index.html'));
@@ -72,17 +72,17 @@ describe('page-loader', () => {
       .reply(200, scriptFile)
       .get('/assets/application.css')
       .reply(200, cssFile);
+
+    await loader(url, tempDir);
   });
 
   test('should expected result file', async () => {
-    await loader(url, tempDir);
     const result = await readFile(`${tempDir}/ru-hexlet-io-courses.html`);
     let expectedHtml = await readFile(getFixture('ru-hexlet-io-courses.html'));
     expect(result).toBe(expectedHtml);
   });
 
   test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
-    await loader(url, tempDir);
     const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
     const expected = await readFile(getFixture(name));
     expect(result).toBe(expected);
@@ -96,6 +96,6 @@ describe('page-loader', () => {
   });
 
   test('should return error for wrong folder', async () => {
-    await expect(loader(url, 'notExistedDir')).rejects.toThrowError();
+    await expect(loader('https://ru.hexlet.io/courses', 'notExistedDir')).rejects.toThrowError();
   });
 });
