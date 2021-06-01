@@ -45,20 +45,32 @@ const getFixture = (filename) => path.join(__dirname, '..', '__fixtures__', file
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 
 describe('page-loader', () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
-    const indexFile = getFixture('index.html');
-    nock(origin).persist().get(pathname).replyWithFile(200, indexFile, {
-      'Content-Type': 'text/plain',
-    });
+    // const indexFile = await readFile(getFixture('index.html'));
 
-    // fetch fixture resource data
-    for (const resource of resources) {
-      const data = getFixture(resource.name);
-      nock(origin).persist().get(resource.path).replyWithFile(200, data, {
-        'Content-Type': resource.contentType,
-      });
-    }
+    let beforeHtml = await readFile(getFixture('index.html'));
+    let imgFile = await readFile(getFixture('ru-hexlet-io-assets-professions-nodejs.png'));
+    let scriptFile = await readFile(getFixture('ru-hexlet-io-packs-js-runtime.js'));
+    let cssFile = await readFile(getFixture('ru-hexlet-io-assets-application.css'));
+
+    // for (const resource of resources) {
+    //   const data =  await readFile(getFixture(resource.name));
+    //   nock(origin).persist().get(resource.path).replyWithFile(200, data, {
+    //     'Content-Type': resource.contentType,
+    //   });
+    // }
+
+    nock('https://ru.hexlet.io')
+      .get('/courses')
+      .times(2)
+      .reply(200, beforeHtml)
+      .get('/assets/professions/nodejs.png')
+      .reply(200, imgFile)
+      .get('/packs/js/runtime.js')
+      .reply(200, scriptFile)
+      .get('/assets/application.css')
+      .reply(200, cssFile);
   });
 
   test('should returns absolute path to the saved file', async () => {
@@ -67,11 +79,11 @@ describe('page-loader', () => {
     expect(path.isAbsolute(resultPath)).toBeTruthy();
   });
 
-  test('should expected original file', async () => {
+  test('should expected result file', async () => {
     const resultPath = await loader(url, tempDir);
     const result = await readFile(resultPath);
-    const expected = await readFile(getFixture(expectedHTML));
-    expect(result).toBe(expected);
+    let expectedHtml = await readFile(getFixture('ru-hexlet-io-courses.html'));
+    expect(result).toBe(expectedHtml);
   });
 
   test.each(resources.map((resource) => [resource.name]))('should return %s', async (name) => {
@@ -82,15 +94,15 @@ describe('page-loader', () => {
   });
 
   test('should return reject with 400', async () => {
-    const scope = nock(origin).persist().get('/not-found').reply(400);
+    const scope = nock(origin).get('/not-found').reply(400);
     const result = () => loader(`${origin}/not-found`, tempDir);
     await expect(result).rejects.toThrow(Error);
     scope.isDone();
   });
 
   test('should return reject with 500', async () => {
-    const scope = nock(origin).persist().get('/').reply(500);
-    const result = () => loader(`${origin}`, tempDir);
+    const scope = nock(origin).get('/').reply(500);
+    const result = () => loader(`${origin}/`, tempDir);
     await expect(result).rejects.toThrow(Error);
     scope.isDone();
   });

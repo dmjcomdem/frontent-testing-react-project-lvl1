@@ -2,7 +2,7 @@ import path from 'path';
 
 const getName = (url = '', type = 'file') => {
   if (!url) {
-    throw new Error('Error Url');
+    throw new Error('Error parse URL on getName method');
   }
 
   const { host, pathname } = new URL(url);

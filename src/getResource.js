@@ -1,8 +1,5 @@
 import cheerio from 'cheerio';
 import getName from './getName';
-import debug from 'debug';
-
-const logger = debug('page-loader');
 
 const tagsMap = {
   img: 'src',
@@ -13,7 +10,7 @@ const tagsMap = {
 export const getResource = (data, url) => {
   const links = [];
   const $ = cheerio.load(data);
-  const { host, origin } = new URL(url);
+  const { origin } = new URL(url);
   const folder = getName(url, 'folder');
 
   Object.entries(tagsMap).forEach(([tag, attr]) => {
@@ -23,7 +20,7 @@ export const getResource = (data, url) => {
 
       const link = new URL(value, origin);
 
-      if (link.host !== host) {
+      if (link.origin !== origin) {
         return;
       }
 

@@ -12,8 +12,8 @@ const loader = async (url = '', folder = process.cwd()) => {
   logger(`URL argument - ${url}`);
 
   if (!url && typeof url !== 'string') {
-    logger('url is empty');
-    return '';
+    logger('URL is empty');
+    return 'URL is empty';
   }
 
   try {
