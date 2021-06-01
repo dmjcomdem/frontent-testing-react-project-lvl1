@@ -1,10 +1,14 @@
-install: install-deps
+install:
+	install-deps
 
 run:
-	bin/nodejs-package.js
+	src/page-loader.js
 
 install-deps:
-	npm ci
+	npm install
+
+test-watch:
+	npm run test:watch
 
 test:
 	npm test
@@ -15,7 +19,4 @@ test-coverage:
 lint:
 	npx eslint .
 
-publish:
-	npm publish
-
-.PHONY: test
+.PHONY: jest
