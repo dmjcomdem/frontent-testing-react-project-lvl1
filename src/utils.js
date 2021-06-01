@@ -17,7 +17,9 @@ const omitExtFromPath = (pathname) => {
  */
 export const getNameFromUrl = (url) => {
   const { host, pathname } = new URL(url);
-  return `${host}${omitExtFromPath(pathname)}`.replace(/(?=\/$)\W/g, '').replace(/\W+/g, '-');
+  const name = `${host}${omitExtFromPath(pathname)}`.replace(/(?=\/$)\W/g, '').replace(/\W+/g, '-');
+
+  return name;
 };
 
 /**
