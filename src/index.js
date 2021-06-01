@@ -31,11 +31,11 @@ const loader = async (url, folder = process.cwd()) => {
     logger(`get resources page`);
     const { html, links } = getResource(htmlData, url);
 
+    await fs.mkdir(folderPath);
     logger(`create directory ${folderPath}`);
-    await fs.mkdir(folderPath, { recursive: true });
 
-    logger(`write file ${filePath}`);
     await fs.writeFile(filePath, html);
+    logger(`write file ${filePath}`);
 
     for await (let { href, name } of links) {
       logger(`✔ start fetch resource [${name}] - ${href}`);
