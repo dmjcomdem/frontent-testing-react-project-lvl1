@@ -24,14 +24,17 @@
   "scripts": {
     "build": "NODE_ENV=production babel ./src --out-dir dist --source-maps inline",
     "test": "npx jest --bail",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "lint": "npx eslint . --fix"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "axios-debug-log": "^0.8.2",
     "cheerio": "^1.0.0-rc.9",
     "commander": "^4.1.1",
-    "debug": "^4.3.1"
+    "debug": "^4.3.1",
+    "chalk": "^4.1.1"
+
   },
   "devDependencies": {
     "@babel/cli": "^7.13.16",
@@ -42,6 +45,7 @@
     "@babel/preset-env": "^7.14.1",
     "babel-jest": "^26.6.3",
     "eslint": "^7.26.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-jest": "^24.3.6",
@@ -51,7 +55,6 @@
     "jest-cli": "^26.6.3",
     "lint-staged": "^11.0.0",
     "nock": "^13.0.11",
-    "prettier": "^2.2.1",
-    "chalk": "^4.1.1"
+    "prettier": "^2.2.1"
   }
 }

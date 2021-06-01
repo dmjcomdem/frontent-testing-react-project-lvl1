@@ -1,6 +1,7 @@
 import cheerio from 'cheerio';
-import getName from './getName';
 import chalk from 'chalk';
+
+import getName from './getName';
 
 const tagsMap = {
   img: 'src',
@@ -15,7 +16,7 @@ const isLocalURL = (url, origin) => {
   return new URL(origin).origin === new URL(url, origin).origin;
 };
 
-export const getResource = (data, url) => {
+const getResource = (data, url) => {
   const links = [];
   const $ = cheerio.load(data);
   const folder = getName(url, 'folder');

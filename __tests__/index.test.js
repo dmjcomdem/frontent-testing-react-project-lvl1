@@ -50,7 +50,7 @@ describe('page-loader', () => {
 
   test('page loaded and saved with resources', async () => {
     const indexFile = await readFixture('index.html');
-    let scope = nock(origin).get(pathname).times(2).reply(200, indexFile);
+    const scope = nock(origin).get(pathname).times(2).reply(200, indexFile);
 
     // fetch fixture resource data
     for (const resource of resources) {

@@ -1,13 +1,12 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import axios from 'axios';
+import chalk from 'chalk';
 
 import debug from 'debug';
 import 'axios-debug-log';
-import chalk from 'chalk';
 
 import getName from './getName';
-import request from './request';
 import getResource from './getResource';
 
 const logger = debug('page-loader');
@@ -19,7 +18,7 @@ const loader = async (url, folder = process.cwd()) => {
 
     if (!url && typeof url !== 'string') {
       logger('URL is empty');
-      return Promise.reject('URL is empty');
+      return Promise.reject(new Error('URL is empty'));
     }
 
     await fs.access(folder);
@@ -33,7 +32,7 @@ const loader = async (url, folder = process.cwd()) => {
     logger(`fetch ${url}`);
     const { data: htmlData } = await axios(url);
 
-    logger(`get resources page`);
+    logger('get resources page');
     const { html, links } = getResource(htmlData, url);
 
     await fs.mkdir(folderPath);
@@ -43,13 +42,15 @@ const loader = async (url, folder = process.cwd()) => {
     logger(`write file ${filePath}`);
 
     if (links.length) {
-      for await (let { href, name } of links) {
+      for await (const { href, name } of links) {
         const { data: response } = await axios(href, { responseType: 'arraybuffer' });
         await fs.writeFile(`${folderPath}/${name}`, response);
         console.log(`${greenCheckChar} ${href}`);
         logger(`${href} was successfully loaded`);
       }
     }
+
+    return true;
   } catch (error) {
     logger(`error: ${error}`);
     console.error(error.message);

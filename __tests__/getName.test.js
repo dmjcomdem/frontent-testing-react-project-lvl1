@@ -11,7 +11,7 @@ describe('getName', () => {
   });
 
   test('should return file name without query-params', () => {
-    const nameFile = getName(origin + '?ver=123&name=test');
+    const nameFile = getName(`${origin}?ver=123&name=test`);
     expect(nameFile).toBe('page-loader-io.html');
   });
 
