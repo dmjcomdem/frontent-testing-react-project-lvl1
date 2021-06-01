@@ -1,5 +1,6 @@
 import cheerio from 'cheerio';
 import getName from './getName';
+import chalk from 'chalk';
 
 const tagsMap = {
   img: 'src',
@@ -30,6 +31,7 @@ export const getResource = (data, url) => {
 
       const href = new URL(value, url).toString();
       const name = getName(href);
+      console.log(`file name: ${chalk.cyan.bold(name)}`);
       const path = `${folder}/${name}`;
 
       $(el).attr(attr, path);
