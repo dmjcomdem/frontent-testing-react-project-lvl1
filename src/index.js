@@ -47,8 +47,6 @@ const loader = async (url, folder = process.cwd()) => {
         logger(`${href} was successfully loaded`);
       }
     }
-
-    return filePath;
   } catch (error) {
     logger(`error: ${error}`);
     throw new Error(error);
