@@ -1,52 +1,89 @@
+// @ts-check
+import axios from 'axios';
+import cheerio from 'cheerio';
+import { extname, format, join, resolve } from 'path';
+import chalk from 'chalk';
+import { URL } from 'url';
 import { promises as fs } from 'fs';
-import path from 'path';
-import debug from 'debug';
+import saveFile from './saveFile.js';
+import { getResourceUrlAttr, getNameFromUrl, isLocalURL, log } from './utils.js';
+import 'axios-debug-log';
 
-import getName from './getName';
-import request from './request';
-import getResource from './getResource';
+const greenCheckChar = chalk.green('\u2705 ');
 
-const logger = debug('page-loader');
+/**
+ * @param {string} url
+ * @param {string} outputPath
+ */
+export default (url, outputPath = process.cwd()) => {
+  const baseName = getNameFromUrl(url);
+  const originUrl = new URL(url).origin;
+  return fs
+    .access(outputPath)
+    .then(() =>
+      axios(url).then(({ data: html }) => {
+        log(`${url} was successfully loaded`);
+        const $ = cheerio.load(html);
+        const pathToHtml = format({
+          dir: outputPath,
+          name: baseName,
+          ext: '.html',
+        });
 
-const loader = async (url = '', folder = process.cwd()) => {
-  logger(`URL argument - ${url}`);
+        const images = $('img');
+        const links = $('link');
+        const scripts = $('script');
+        const resources = [...images, ...links, ...scripts];
+        const localResources = resources.filter((resource) => {
+          const linkAttr = getResourceUrlAttr(resource.tagName);
+          return isLocalURL(resource.attribs[linkAttr], originUrl);
+        });
 
-  if (!url && typeof url !== 'string') {
-    logger('URL is empty');
-    return 'URL is empty';
-  }
+        if (localResources.length === 0) {
+          return saveFile(pathToHtml, html).then(() => html);
+        }
 
-  try {
-    const fileName = getName(url);
-    const folderName = getName(url, 'folder');
+        const filesDirName = `${baseName}_files`;
+        const filesDirPath = resolve(outputPath, filesDirName);
+        return fs
+          .mkdir(filesDirPath)
+          .then(() =>
+            Promise.all(
+              localResources.map((resource) => {
+                const linkAttr = getResourceUrlAttr(resource.tagName);
+                const resourceUrl = resource.attribs[linkAttr];
+                const fullURL = new URL(resourceUrl, originUrl).toString();
 
-    const filePath = path.resolve(__dirname, String(folder), fileName);
-    const folderPath = path.resolve(__dirname, String(folder), folderName);
+                const fileName = getNameFromUrl(fullURL);
+                const ext = extname(resourceUrl) || '.html';
+                const fullFileName = format({ name: fileName, ext });
+                const localPath = join(filesDirName, fullFileName);
+                // eslint-disable-next-line no-param-reassign
+                resource.attribs[linkAttr] = localPath;
 
-    logger(`fetch ${url}`);
-    const htmlData = await request(url);
+                const pathToResource = format({
+                  dir: filesDirPath,
+                  name: fileName,
+                  ext,
+                });
+                return axios(fullURL, { responseType: 'arraybuffer' }).then(({ data }) => {
+                  console.log(`${greenCheckChar} ${fullURL}`);
+                  log(`${fullURL} was successfully loaded`);
 
-    logger(`get resources page`);
-    const { html, links } = getResource(htmlData, url);
-
-    logger(`create directory ${folderPath}`);
-    await fs.mkdir(folderPath, { recursive: true });
-
-    logger(`write file ${filePath}`);
-    await fs.writeFile(filePath, html);
-
-    for await (let { href, name } of links) {
-      logger(`✔ start fetch resource [${name}] - ${href}`);
-      const response = await request(href, { responseType: 'arraybuffer' });
-      await fs.writeFile(`${folderPath}/${name}`, response);
-      logger(`✔ fetch and write resource ${href}`);
-    }
-
-    return filePath;
-  } catch (error) {
-    logger(`error: ${error}`);
-    throw new Error(error);
-  }
+                  return saveFile(pathToResource, data);
+                });
+              })
+            )
+          )
+          .then(() => saveFile(pathToHtml, $.html()))
+          .then(() => {
+            log(`Page was successfully downloaded into '${outputPath}'`);
+            console.log(`Page was successfully downloaded into '${outputPath}'`);
+          });
+      })
+    )
+    .catch((e) => {
+      log(e);
+      throw e;
+    });
 };
-
-export default loader;
