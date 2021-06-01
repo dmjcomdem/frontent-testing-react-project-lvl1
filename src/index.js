@@ -90,7 +90,6 @@ export default (url, outputPath = process.cwd()) => {
         });
     })).catch((e) => {
       log(e);
-      console.error(e.message);
       throw e;
     });
 };
