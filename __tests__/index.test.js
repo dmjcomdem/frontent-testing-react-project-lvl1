@@ -73,12 +73,11 @@ describe('page-loader', () => {
 
   test('throw error if page not exist', async () => {
     const scope = nock(origin).persist().get(pathname).reply(500);
-    const result = () => loader(url, tempDir);
-    await expect(result).rejects.toThrow(Error);
+    await expect(loader(url, tempDir)).rejects.toThrow(Error);
     scope.isDone();
   });
 
   test('throw error if output dit not exist', async () => {
-    await expect(loader(url, 'notExistedDir')).rejects.toThrowError();
+    await expect(loader(url, 'notExistedDir')).rejects.toThrowError(/notExistedDir/);
   });
 });
