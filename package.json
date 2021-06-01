@@ -1,67 +1,46 @@
 {
   "name": "@hexlet/code",
-  "author": "dmjcomdem",
-  "version": "1.0.0",
-  "description": "Command-line tool for downloading page loader resources",
-  "license": "ISC",
-  "engines": {
-    "node": ">=14"
-  },
+  "version": "0.0.1",
+  "description": "Page loader",
   "bin": {
     "page-loader": "bin/page-loader.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/dmjcomdem/frontent-testing-react-project-lvl1.git"
-  },
-  "files": [
-    "dist"
-  ],
   "main": "src/index.js",
-  "jest": {
-    "testEnvironment": "node"
+  "engines": {
+    "node": ">=14"
   },
   "scripts": {
-    "build": "NODE_ENV=production babel src --out-dir dist --source-maps inline",
-    "test": "npx jest --colors --runInBand --bail",
-    "test:watch": "jest --watch"
+    "test": "npx jest --bail"
+  },
+  "author": "Ruslan Sukharev",
+  "license": "ISC",
+  "jest": {
+    "testEnvironment": "node",
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest"
+    },
+    "testRunner": "jest-circus/runner"
   },
   "dependencies": {
     "axios": "^0.21.1",
     "axios-debug-log": "^0.8.2",
-    "cheerio": "^1.0.0-rc.9",
-    "commander": "^4.1.1",
+    "chalk": "^4.1.1",
+    "cheerio": "^1.0.0-rc.6",
+    "commander": "^7.2.0",
     "debug": "^4.3.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.13.16",
     "@babel/core": "^7.14.0",
-    "@babel/eslint-parser": "^7.13.14",
-    "@babel/eslint-plugin": "^7.13.16",
-    "@babel/node": "^7.13.13",
-    "@babel/preset-env": "^7.14.1",
+    "@babel/preset-env": "^7.14.0",
+    "@jest/globals": "^26.6.2",
     "babel-jest": "^26.6.3",
-    "eslint": "^7.26.0",
-    "eslint-config-prettier": "^8.3.0",
+    "eslint": "^7.22.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
-    "eslint-plugin-jest": "^24.3.6",
-    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-jest": "^24.3.2",
     "jest": "^26.6.3",
     "jest-circus": "^26.6.3",
     "jest-cli": "^26.6.3",
-    "lint-staged": "^11.0.0",
-    "nock": "^13.0.11",
-    "prettier": "^2.2.1",
-    "simple-git-hooks": "^2.4.1"
-  },
-  "simple-git-hooks": {
-    "pre-commit": "npx lint-staged",
-    "pre-push": "npm test"
-  },
-  "lint-staged": {
-    "src/**/*.js": [
-      "prettier --config .prettierrc.json --write",
-      "eslint"
-    ]
+    "nock": "^13.0.11"
   }
 }
