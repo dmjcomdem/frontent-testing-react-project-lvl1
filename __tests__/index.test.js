@@ -103,6 +103,6 @@ describe('page-loader', () => {
   });
 
   test('should return error for wrong folder', async () => {
-    await expect(loader(origin, `${tempDir}/folder`)).rejects.toThrow();
+    await expect(loader(url, 'notExistedDir')).rejects.toThrowError();
   });
 });
