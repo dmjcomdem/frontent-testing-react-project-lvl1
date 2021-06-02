@@ -24,8 +24,9 @@
   "scripts": {
     "build": "NODE_ENV=production babel ./src --out-dir dist --source-maps inline",
     "test": "npx jest --bail",
+    "test:coverage": "npx jest --coverage --coverageProvider=v8",
     "test:watch": "jest --watch",
-    "lint": "npx eslint . --fix"
+    "lint": "npx eslint ."
   },
   "dependencies": {
     "axios": "^0.21.1",
