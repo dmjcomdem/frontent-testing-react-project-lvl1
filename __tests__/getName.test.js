@@ -15,22 +15,14 @@ describe('getName', () => {
     expect(nameFile).toBe('page-loader-io.html');
   });
 
-  test('should return css file name', () => {
-    const url = `${baseURL}/style.css`;
+  test.each([
+    ['style.css', 'page-loader-io-courses-style.css'],
+    ['image.png', 'page-loader-io-courses-image.png'],
+    ['script.js', 'page-loader-io-courses-script.js'],
+  ])('should return %s file name', (file, expected) => {
+    const url = `${baseURL}/${file}`;
     const nameFile = getName(url);
-    expect(nameFile).toBe('page-loader-io-courses-style.css');
-  });
-
-  test('should return img file name', () => {
-    const url = `${baseURL}/image.png`;
-    const nameFile = getName(url);
-    expect(nameFile).toBe('page-loader-io-courses-image.png');
-  });
-
-  test('should return js file name', () => {
-    const url = `${baseURL}/script.js`;
-    const nameFile = getName(url);
-    expect(nameFile).toBe('page-loader-io-courses-script.js');
+    expect(nameFile).toBe(expected);
   });
 
   test('should return folder name', () => {

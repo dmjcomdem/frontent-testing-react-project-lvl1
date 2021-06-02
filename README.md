@@ -1,4 +1,6 @@
 ### Hexlet tests and linter status:
 [![Actions Status](https://github.com/dmjcomdem/frontent-testing-react-project-lvl1/workflows/hexlet-check/badge.svg)](https://github.com/dmjcomdem/frontent-testing-react-project-lvl1/actions)
-[![Codacy Badge](https://app.codacy.com/project/badge/Grade/a324bfd65b4f4ffb99594be9a934e387)](https://www.codacy.com/gh/dmjcomdem/page-loader-cli/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=dmjcomdem/page-loader-cli&amp;utm_campaign=Badge_Grade)
+[![Maintainability](https://api.codeclimate.com/v1/badges/7ca2788afb73675a5630/maintainability)](https://codeclimate.com/github/dmjcomdem/page-loader-cli/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/7ca2788afb73675a5630/test_coverage)](https://codeclimate.com/github/dmjcomdem/page-loader-cli/test_coverage)
+
 [![asciicast](https://asciinema.org/a/417170.svg)](https://asciinema.org/a/417170)
