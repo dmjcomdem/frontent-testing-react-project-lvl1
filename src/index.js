@@ -42,6 +42,7 @@ const loader = async (url, folder = process.cwd()) => {
     logger(`write file ${filePath}`);
 
     if (links.length) {
+      // eslint-disable-next-line no-restricted-syntax
       for await (const { href, name } of links) {
         const { data: response } = await axios(href, { responseType: 'arraybuffer' });
         await fs.writeFile(`${folderPath}/${name}`, response);

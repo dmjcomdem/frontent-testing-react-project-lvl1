@@ -11,7 +11,6 @@ import axiosHttpAdapter from 'axios/lib/adapters/http';
 import loader from '../src/index';
 
 /* settings */
-nock.disableNetConnect();
 axios.defaults.adapter = axiosHttpAdapter;
 
 /* variables */
@@ -45,15 +44,20 @@ const readFixture = (filename) => fs.readFile(getFixture(filename), 'utf-8');
 
 describe('page-loader', () => {
   beforeEach(async () => {
+    nock.disableNetConnect();
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
+  });
+
+  afterAll(async () => {
+    nock.cleanAll();
   });
 
   test('page loaded and saved with resources', async () => {
     const indexFile = await readFixture('index.html');
     const scope = nock(origin).get(pathname).times(2).reply(200, indexFile);
 
-    // fetch fixture resource data
-    for (const resource of resources) {
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const resource of resources) {
       const data = await readFixture(resource.name);
       scope.get(resource.path).reply(200, data);
     }
@@ -63,7 +67,8 @@ describe('page-loader', () => {
     const expectedHtml = await readFile(getFixture(expectedHTML));
     expect(actualHtml).toBe(expectedHtml);
 
-    for (const { name } of resources) {
+    // eslint-disable-next-line no-restricted-syntax
+    for await (const { name } of resources) {
       const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
       const expected = await readFile(getFixture(name));
       expect(result).toBe(expected);
