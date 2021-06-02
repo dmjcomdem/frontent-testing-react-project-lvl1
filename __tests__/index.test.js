@@ -43,13 +43,17 @@ const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const readFixture = (filename) => fs.readFile(getFixture(filename), 'utf-8');
 
 describe('page-loader', () => {
-  beforeEach(async () => {
+  beforeAll(() => {
     nock.disableNetConnect();
-    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
   });
 
   afterAll(async () => {
     nock.cleanAll();
+    nock.enableNetConnect();
+  });
+
+  beforeEach(async () => {
+    tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
   });
 
   test('page loaded and saved with resources', async () => {

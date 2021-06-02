@@ -16,7 +16,7 @@ const loader = async (url, folder = process.cwd()) => {
   try {
     logger(`URL argument - ${url}`);
 
-    if (!url && typeof url !== 'string') {
+    if (!url) {
       logger('URL is empty');
       return Promise.reject(new Error('URL is empty'));
     }
@@ -54,7 +54,6 @@ const loader = async (url, folder = process.cwd()) => {
     return true;
   } catch (error) {
     logger(`error: ${error}`);
-    console.error(error.message);
     throw error;
   }
 };
