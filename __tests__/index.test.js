@@ -80,6 +80,10 @@ describe('page-loader', () => {
     scope.isDone();
   });
 
+  test('throw error if empty arguments', async () => {
+    await expect(loader()).rejects.toThrow('URL is empty');
+  });
+
   test('throw error if page not exist', async () => {
     const scope = nock(origin).persist().get(pathname).reply(500);
     await expect(loader(url, tempDir)).rejects.toThrow(Error);
