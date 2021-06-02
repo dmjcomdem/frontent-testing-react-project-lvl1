@@ -4,6 +4,7 @@ describe('getName', () => {
   const origin = 'https://page-loader.io';
   const pathname = 'courses';
   const baseURL = `${origin}/${pathname}`;
+  const errorMessage = 'Error parse URL on getName method';
 
   test('should return html file name', () => {
     const nameFile = getName(origin);
@@ -26,26 +27,20 @@ describe('getName', () => {
   });
 
   test('should return folder name', () => {
-    const nameFile = getName(origin, 'folder');
-    expect(nameFile).toBe('page-loader-io_files');
+    expect(getName(origin, 'folder')).toBe('page-loader-io_files');
   });
 
-  describe('With invalid arguments...', () => {
-    const errorMessage = 'Error parse URL on getName method';
+  it('should error return empty file', () => {
+    const result = () => getName('');
+    expect(result).toThrow(errorMessage);
+  });
 
-    it('should error return empty file', () => {
-      const result = () => getName('');
-      expect(result).toThrow(errorMessage);
-    });
+  it('should return empty folder', () => {
+    const result = () => getName('', 'folder');
+    expect(result).toThrow(errorMessage);
+  });
 
-    it('should return empty folder', () => {
-      const result = () => getName('', 'folder');
-      expect(result).toThrow(errorMessage);
-    });
-
-    it('should return empty folder for no arguments', () => {
-      const result = () => getName();
-      expect(result).toThrow(errorMessage);
-    });
+  it('should return empty folder for no arguments', () => {
+    expect(getName).toThrow(errorMessage);
   });
 });
