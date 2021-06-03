@@ -4,6 +4,7 @@ describe('getName', () => {
   const origin = 'https://page-loader.io';
   const pathname = 'courses';
   const baseURL = `${origin}/${pathname}`;
+  const errorMessage = 'Invalid URL';
 
   test('should return html file name', () => {
     const nameFile = getName(origin);
@@ -27,5 +28,15 @@ describe('getName', () => {
 
   test('should return folder name', () => {
     expect(getName(origin, 'folder')).toBe('page-loader-io_files');
+  });
+
+  it('should return error for invoke with empty string url', () => {
+    const result = () => getName('', 'folder');
+    expect(result).toThrow(errorMessage);
+  });
+
+  it('should return error for invoke no arguments', () => {
+    const result = () => getName();
+    expect(result).toThrow(errorMessage);
   });
 });

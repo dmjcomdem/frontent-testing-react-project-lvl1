@@ -67,14 +67,15 @@ describe('page-loader', () => {
     }
 
     await loader(url, tempDir);
+
     const actualHtml = await readFile(`${tempDir}/${expectedHTML}`);
-    const expectedHtml = await readFile(getFixture(expectedHTML));
+    const expectedHtml = await readFixture(expectedHTML);
     expect(actualHtml).toBe(expectedHtml);
 
     // eslint-disable-next-line no-restricted-syntax
     for await (const { name } of resources) {
       const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
-      const expected = await readFile(getFixture(name));
+      const expected = await readFixture(name);
       expect(result).toBe(expected);
     }
     scope.isDone();
@@ -85,7 +86,7 @@ describe('page-loader', () => {
   });
 
   test('throw error if page not exist', async () => {
-    const scope = nock(origin).persist().get(pathname).reply(500);
+    const scope = nock(origin).get(pathname).reply(500);
     await expect(loader(url, tempDir)).rejects.toThrow(Error);
     scope.isDone();
   });
