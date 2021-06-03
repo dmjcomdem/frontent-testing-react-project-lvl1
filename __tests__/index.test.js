@@ -61,9 +61,9 @@ describe('page-loader', () => {
     const scope = nock(origin).get(pathname).times(2).reply(200, indexFile);
 
     // eslint-disable-next-line no-restricted-syntax
-    for await (const resource of resources) {
-      const data = await readFixture(resource.name);
-      scope.get(resource.path).reply(200, data);
+    for await (const { name, path } of resources) {
+      const data = await readFixture(name);
+      scope.get(path).reply(200, data);
     }
 
     await loader(url, tempDir);
