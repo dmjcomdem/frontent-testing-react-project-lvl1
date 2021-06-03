@@ -4,7 +4,6 @@ describe('getName', () => {
   const origin = 'https://page-loader.io';
   const pathname = 'courses';
   const baseURL = `${origin}/${pathname}`;
-  const errorMessage = 'Error parse URL on getName method';
 
   test('should return html file name', () => {
     const nameFile = getName(origin);
@@ -28,19 +27,5 @@ describe('getName', () => {
 
   test('should return folder name', () => {
     expect(getName(origin, 'folder')).toBe('page-loader-io_files');
-  });
-
-  it('should error return empty file', () => {
-    const result = () => getName('');
-    expect(result).toThrow(errorMessage);
-  });
-
-  it('should return empty folder', () => {
-    const result = () => getName('', 'folder');
-    expect(result).toThrow(errorMessage);
-  });
-
-  it('should return empty folder for no arguments', () => {
-    expect(getName).toThrow(errorMessage);
   });
 });
