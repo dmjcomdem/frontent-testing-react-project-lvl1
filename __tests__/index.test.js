@@ -5,14 +5,14 @@ import { promises as fs } from 'fs';
 /* npm-package */
 import nock from 'nock';
 import axios from 'axios';
+/* без axiosHttpAdapter не работают хуки codeclimate для сбора coverage */
+/* вернул значение для коректной работы сервиса */
 import axiosHttpAdapter from 'axios/lib/adapters/http';
 
 /* file loader */
 import loader from '../src/index';
 
 /* settings */
-/* без axiosHttpAdapter не работают хуки codeclimate для сбора coverage */
-/* вернул значение для коректной работы сервиса */
 axios.defaults.adapter = axiosHttpAdapter;
 
 /* variables */
