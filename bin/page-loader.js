@@ -4,9 +4,7 @@ import commander from 'commander';
 import { version, description } from '../package.json';
 import loadPage from '../src/index.js';
 
-const { program } = commander;
-
-program
+commander
   .version(version)
   .description(description)
   .arguments('<pageUrl>')
@@ -18,4 +16,4 @@ program
       process.exit(1);
     }));
 
-program.parse(process.argv);
+commander.parse(process.argv);
