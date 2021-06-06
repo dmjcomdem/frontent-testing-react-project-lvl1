@@ -11,6 +11,8 @@ import axiosHttpAdapter from 'axios/lib/adapters/http';
 import loader from '../src/index';
 
 /* settings */
+/* без axiosHttpAdapter не работают хуки codeclimate для сбора coverage */
+/* вернул значение для коректной работы сервиса */
 axios.defaults.adapter = axiosHttpAdapter;
 
 /* variables */
