@@ -9,13 +9,11 @@ commander
   .description(description)
   .arguments('<pageUrl>')
   .option('-o, --output [dir]', 'output dir', process.cwd())
-  .action((pageUrl, options) =>
-    loadPage(pageUrl, options.output)
-      .then((filepath) => console.log(`Page was downloaded into "${filepath}"`))
-      .catch((error) => {
-        console.error(error.message);
-        process.exit(1);
-      })
-  );
+  .action((pageUrl, options) => loadPage(pageUrl, options.output)
+    .then((filepath) => console.log(`Page was downloaded into "${filepath}"`))
+    .catch((error) => {
+      console.error(error.message);
+      process.exit(1);
+    }));
 
 commander.parse(process.argv);
