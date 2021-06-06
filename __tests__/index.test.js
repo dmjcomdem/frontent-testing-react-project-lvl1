@@ -52,6 +52,8 @@ const loadMockHTTPRequest = async () => {
     const data = await readFixture(resource.name);
     scope.get(resource.path).reply(200, data);
   }
+
+  return scope;
 };
 
 describe('page-loader', () => {
@@ -70,21 +72,21 @@ describe('page-loader', () => {
 
   describe('page loaded and saved with resources', () => {
     test('resource index.html', async () => {
-      await loadMockHTTPRequest();
+      const scope = await loadMockHTTPRequest();
       await loader(url, tempDir);
-
       const actualHtml = await readFile(`${tempDir}/${expectedHTML}`);
       const expectedHtml = await readFixture(expectedHTML);
       expect(actualHtml).toBe(expectedHtml);
+      scope.isDone();
     });
 
     test.each(resources.map(({ name }) => name))('resource loaded %s', async (name) => {
-      await loadMockHTTPRequest();
+      const scope = await loadMockHTTPRequest();
       await loader(url, tempDir);
-
       const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
       const expected = await readFixture(name);
       expect(result).toBe(expected);
+      scope.isDone();
     });
   });
 
