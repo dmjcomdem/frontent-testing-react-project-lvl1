@@ -36,6 +36,16 @@ const resources = [
 const getFixture = (filename) => path.join(__dirname, '..', '__fixtures__', filename);
 const readFile = (filePath) => fs.readFile(filePath, 'utf-8');
 const readFixture = (filename) => fs.readFile(getFixture(filename), 'utf-8');
+const loadMockHTTPRequest = async () => {
+  const indexFile = await readFixture('index.html');
+  const scope = nock(origin).get(pathname).times(2).reply(200, indexFile);
+
+  // eslint-disable-next-line no-restricted-syntax
+  for await (const resource of resources) {
+    const data = await readFixture(resource.name);
+    scope.get(resource.path).reply(200, data);
+  }
+};
 
 describe('page-loader', () => {
   beforeAll(() => {
@@ -51,42 +61,39 @@ describe('page-loader', () => {
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'page-loader-'));
   });
 
-  test('page loaded and saved with resources', async () => {
-    const indexFile = await readFixture('index.html');
-    const scope = nock(origin).get(pathname).times(2).reply(200, indexFile);
+  describe('page loaded and saved with resources', () => {
+    test('resource index.html', async () => {
+      await loadMockHTTPRequest();
+      await loader(url, tempDir);
 
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const resource of resources) {
-      const data = await readFixture(resource.name);
-      scope.get(resource.path).reply(200, data);
-    }
+      const actualHtml = await readFile(`${tempDir}/${expectedHTML}`);
+      const expectedHtml = await readFixture(expectedHTML);
+      expect(actualHtml).toBe(expectedHtml);
+    });
 
-    await loader(url, tempDir);
+    test.each(resources.map(({ name }) => name))('resource loaded %s', async (name) => {
+      await loadMockHTTPRequest();
+      await loader(url, tempDir);
 
-    const actualHtml = await readFile(`${tempDir}/${expectedHTML}`);
-    const expectedHtml = await readFixture(expectedHTML);
-    expect(actualHtml).toBe(expectedHtml);
-
-    // eslint-disable-next-line no-restricted-syntax
-    for await (const { name } of resources) {
       const result = await readFile(`${tempDir}/${resourceFiles}/${name}`);
       const expected = await readFixture(name);
       expect(result).toBe(expected);
-    }
-    scope.isDone();
+    });
   });
 
-  test('throw error if empty arguments', async () => {
-    await expect(loader()).rejects.toThrow('URL is empty');
-  });
+  describe('error rejects', () => {
+    test('throw error if empty arguments', async () => {
+      await expect(loader()).rejects.toThrow('URL is empty');
+    });
 
-  test('throw error if page not exist', async () => {
-    const scope = nock(origin).get(pathname).reply(500);
-    await expect(loader(url, tempDir)).rejects.toThrow(Error);
-    scope.isDone();
-  });
+    test('throw error if page not exist', async () => {
+      const scope = nock(origin).get(pathname).reply(500);
+      await expect(loader(url, tempDir)).rejects.toThrow(Error);
+      scope.isDone();
+    });
 
-  test('throw error if output dit not exist', async () => {
-    await expect(loader(url, 'notExistedDir')).rejects.toThrowError(/notExistedDir/);
+    test('throw error if output dit not exist', async () => {
+      await expect(loader(url, 'notExistedDir')).rejects.toThrowError(/notExistedDir/);
+    });
   });
 });
