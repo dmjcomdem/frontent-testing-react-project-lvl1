@@ -4,14 +4,9 @@ import { promises as fs } from 'fs';
 
 /* npm-package */
 import nock from 'nock';
-import axios from 'axios';
-import axiosHttpAdapter from 'axios/lib/adapters/http';
 
 /* file loader */
 import loader from '../src/index';
-
-/* settings */
-axios.defaults.adapter = axiosHttpAdapter;
 
 /* variables */
 const origin = 'https://ru.hexlet.io';

@@ -46,7 +46,7 @@ const loader = async (url, folder = process.cwd()) => {
       for await (const { href, name } of links) {
         const { data: response } = await axios(href, { responseType: 'arraybuffer' });
         await fs.writeFile(`${folderPath}/${name}`, response);
-        console.log(`${greenCheckChar} ${href}`);
+        logger(`${greenCheckChar} ${href}`);
         logger(`${href} was successfully loaded`);
       }
     }
