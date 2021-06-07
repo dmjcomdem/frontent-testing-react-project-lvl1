@@ -10,7 +10,7 @@
 #### Download resources
 [![asciicast](https://asciinema.org/a/vLTc4YjHJ7Pea4Hp5tZiEm6Oc.svg)](https://asciinema.org/a/vLTc4YjHJ7Pea4Hp5tZiEm6Oc)
 
-#### Download resources with option folder
+#### Download resources in folder
 [![asciicast](https://asciinema.org/a/OEu8XWGJIA8Sj5dNhLYIVmwDN.svg)](https://asciinema.org/a/OEu8XWGJIA8Sj5dNhLYIVmwDN)
 
 #### Debug view
